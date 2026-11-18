@@ -4,7 +4,7 @@
 > A full-stack food ordering and operations management system featuring an interactive customer menu, cart, real-time delivery fee calculations, and an administrative dashboard.
 
 ---
-
+Open the page using link : 8food-portal.onrender.com
 ## 🌟 Overview
 
 gr8food portal is designed to provide a seamless dining experience for customers and a smooth management interface for kitchen staff and administrators.
@@ -47,30 +47,6 @@ We updated the login system to enforce a **clean-slate policy** so the form open
 
 ---
 
-## 💻 Running Locally
-
-### 1. Clone or Open the Repository
-```bash
-git clone https://github.com/sufain2005/gr8food-portal.git
-cd gr8food-portal
-```
-
-### 2. Install Backend Dependencies
-```bash
-cd backend
-npm install
-```
-
-### 3. Start the Server
-```bash
-npm start
-```
-The server will start on port `5000` (or the port defined in your `.env`).
-
-### 4. Open the Application
-Visit `http://localhost:5000` in your browser.
-
----
 
 ## 📄 License
 This project is for gr8food portal operations and dining management.
