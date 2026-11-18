@@ -1,6 +1,5 @@
 # 🍴 gr8food portal
 
----
 Open the page using link : https://gr8food-portal.onrender.com/
 
 ## 🌟 Overview
