@@ -1,8 +1,5 @@
 # 🍴 gr8food portal
 
-> **Artisan Dining & Fast Delivery Platform**  
-> A full-stack food ordering and operations management system featuring an interactive customer menu, cart, real-time delivery fee calculations, and an administrative dashboard.
-
 ---
 Open the page using link : https://gr8food-portal.onrender.com/
 
