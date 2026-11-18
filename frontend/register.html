@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>gr8food portal — Create Account</title>
+  
+  <!-- 
+    ================================================================================
+    [PROTECTION DECOY SHIELD] RUNTIME HASH: 0x7E31D9B4A0C2E1F84039AB872D1E4A90
+    SYSTEM INTEGRITY: SHA-512 VIRTUALIZED RUNTIME VAULT.
+    UNAUTHORIZED INVENTORY, EXTRACTION OR REVERSE-ENGINEERING OF SOURCE CODE
+    IS STRICTLY PROHIBITED AND MONITORED BY REAL-TIME DEFENSE ALARMS.
+    ================================================================================
+  -->
+  <script>
+    (function initDecoySourceGuard() {
+      function showDecoySecurityOverlay(triggerAction) {
+        let overlay = document.getElementById('decoySecurityOverlay');
+        if (!overlay) {
+          overlay = document.createElement('div');
+          overlay.id = 'decoySecurityOverlay';
+          overlay.style.cssText = 'position:fixed;inset:0;background:#1C241C;z-index:9999999;color:#FFF8ED;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:sans-serif;box-shadow:inset 0 0 100px rgba(0,0,0,0.8);';
+          overlay.innerHTML = `
+            <div style="font-size:64px;margin-bottom:16px;">🛡️</div>
+            <h2 style="font-size:26px;color:#F0E6D2;margin-bottom:8px;">Source Code Inspection Prohibited</h2>
+            <p style="font-size:14px;color:#A89F8D;max-width:480px;line-height:1.6;margin-bottom:20px;">
+              Direct code extraction and developer inspection are restricted. This attempt has been recorded and an intrusion alert was transmitted to the Administrator.
+            </p>
+            <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);padding:10px 22px;border-radius:9999px;font-family:monospace;font-size:12px;color:#E0D6C2;">
+              SECURITY KERNEL: Virtual Encrypted Sandbox [ACTIVE]
+            </div>
+          `;
+          document.body.appendChild(overlay);
+        }
+        overlay.style.display = 'flex';
+        setTimeout(() => {
+          if (overlay) overlay.style.display = 'none';
+        }, 2400);
+
+        try {
+          fetch('/api/security/alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'SOURCE_CODE_INSPECTION_ATTEMPT',
+              page: 'register.html',
+              detail: 'Attempted: ' + triggerAction,
+              userAgent: navigator.userAgent
+            }),
+            keepalive: true
+          });
+        } catch (_) {}
+
+        try {
+          console.clear();
+          console.log('%c[SECURITY SHIELD] %cDecoy Virtualization Environment Active.', 'color:#9B2226;font-weight:bold;font-size:14px;', 'color:#A89F8D;');
+          console.log('%cEncrypted Memory Address: 0x7FFF89A4..0x7FFF89FF [LOCKED]', 'color:#646E62;font-family:monospace;');
+        } catch (_) {}
+      }
+
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        showDecoySecurityOverlay('Right-Click Context Menu');
+      }, { passive: false });
+
+      document.addEventListener('keydown', function(e) {
+        const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+        const ctrl = isMac ? e.metaKey : e.ctrlKey;
+
+        if (e.key === 'F12' || e.keyCode === 123) {
+          e.preventDefault(); e.stopPropagation();
+          showDecoySecurityOverlay('F12 DevTools Key');
+          return false;
+        }
+        if (ctrl && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) {
+          e.preventDefault(); e.stopPropagation();
+          showDecoySecurityOverlay('Ctrl+U (View Source)');
+          return false;
+        }
+        if (ctrl && e.shiftKey && (
+          e.key === 'I' || e.key === 'i' || e.keyCode === 73 ||
+          e.key === 'J' || e.key === 'j' || e.keyCode === 74 ||
+          e.key === 'C' || e.key === 'c' || e.keyCode === 67
+        )) {
+          e.preventDefault(); e.stopPropagation();
+          showDecoySecurityOverlay('Ctrl+Shift+I/J/C Inspect Shortcut');
+          return false;
+        }
+        if (ctrl && (e.key === 's' || e.key === 'S' || e.keyCode === 83)) {
+          e.preventDefault(); e.stopPropagation();
+          showDecoySecurityOverlay('Ctrl+S (Save Page)');
+          return false;
+        }
+        if (ctrl && (e.key === 'p' || e.key === 'P' || e.keyCode === 80)) {
+          e.preventDefault(); e.stopPropagation();
+          showDecoySecurityOverlay('Ctrl+P (Print Page)');
+          return false;
+        }
+      }, { capture: true, passive: false });
+    })();
+  </script>
+
+  <!-- Google Fonts: DM Serif Display & Manrope -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+   
+
+    :root {
+      --bg-cream: #FFF8ED;              /* Warm cream background */
+      --bg-cream-alt: #F7EFE1;          /* Deeper cream contrast */
+      --color-khaki: #A89F8D;           /* Main brand colour, muted khaki */
+      --color-khaki-light: #EBE5DB;     /* Soft khaki tint */
+      --color-khaki-dark: #877D6B;      /* Deeper khaki */
+      --color-olive: #384338;           /* Dark olive for headings, buttons & accents */
+      --color-olive-dark: #272F27;      /* Deepest dark olive */
+      --color-olive-light: #4D5A4D;     /* Medium olive */
+      --card-bg: #FFFFFF;               /* Soft ivory / pure white */
+      
+      --text-dark: #343A32;             /* High-contrast body text */
+      --text-muted: #646E62;            /* Secondary muted text */
+      
+      --color-success: #2D6A4F;
+      --color-danger: #9B2226;
+      
+      --border-subtle: rgba(56, 67, 56, 0.12);
+      --border-khaki: rgba(168, 159, 141, 0.6);
+      --shadow-sm: 0 4px 12px rgba(56, 67, 56, 0.05);
+      --shadow-md: 0 12px 30px rgba(56, 67, 56, 0.08);
+      --shadow-lg: 0 24px 60px rgba(56, 67, 56, 0.14);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 24px;
+      --radius-full: 9999px;
+      
+      --font-heading: 'DM Serif Display', Georgia, serif;
+      --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 16px;
+      position: relative;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .bg-pattern {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+   
+    button:focus-visible, a:focus-visible, input:focus-visible {
+      outline: 2px solid var(--color-khaki-dark);
+      outline-offset: 2px;
+    }
+
+    .top-nav-bar {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card-bg);
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+    }
+    .top-nav-bar a {
+      color: var(--color-olive);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+    .top-nav-bar a:hover {
+      color: var(--color-khaki-dark);
+    }
+
+    .register-card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 460px;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-lg);
+      padding: 38px 32px;
+    }
+
+    .brand-header-mini {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--color-olive);
+      color: #FFFFFF;
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+    .brand-badge span.icon {
+      color: var(--color-khaki);
+    }
+    .register-card h2 {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      color: var(--color-olive);
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .register-card p.sub {
+      color: var(--text-muted);
+      font-size: 13.5px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--color-olive);
+      margin-bottom: 5px;
+    }
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      font-size: 15px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .input-field {
+      width: 100%;
+      padding: 11px 12px 11px 38px;
+      background: var(--bg-cream);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-dark);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .input-field:focus {
+      background: #FFFFFF;
+      border-color: var(--color-khaki-dark);
+      box-shadow: 0 0 0 3px rgba(168, 159, 141, 0.25);
+    }
+
+    .terms-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 16px 0 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      background: var(--bg-cream);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+    .terms-box input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: var(--color-olive);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+    .terms-link {
+      color: var(--color-olive);
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .terms-link:hover { color: var(--color-khaki-dark); }
+
+    .btn-submit {
+      width: 100%;
+      padding: 13px 20px;
+      background: var(--color-olive);
+      color: #FFFFFF;
+      border: 1px solid var(--color-olive-dark);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 18px rgba(39, 47, 39, 0.15);
+      margin-top: 8px;
+    }
+    .btn-submit:hover {
+      background: var(--color-khaki-dark);
+      border-color: var(--color-khaki-dark);
+      transform: translateY(-1px);
+    }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    .message {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 13px;
+      min-height: 18px;
+      font-weight: 600;
+    }
+
+    .footer-link {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 14px;
+    }
+    .footer-link a {
+      color: var(--color-olive);
+      font-weight: 700;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+    .footer-link a:hover { color: var(--color-khaki-dark); }
+
+    .footer-food-thought {
+      position: relative;
+      z-index: 2;
+      margin-top: 20px;
+      text-align: center;
+      font-family: var(--font-heading);
+      font-style: italic;
+      color: var(--text-muted);
+      font-size: 14.5px;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(39, 47, 39, 0.7);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    .modal-box {
+      background: var(--card-bg);
+      color: var(--text-dark);
+      border: 1px solid var(--border-khaki);
+      padding: 28px 24px;
+      border-radius: var(--radius-md);
+      max-width: 480px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .modal-box h3 {
+      font-family: var(--font-heading);
+      color: var(--color-olive);
+      margin-bottom: 12px;
+      font-size: 20px;
+    }
+    .modal-box ul { padding-left: 20px; margin: 12px 0; color: var(--text-dark); }
+    .modal-box li { margin-bottom: 8px; }
+    .modal-btn {
+      width: 100%;
+      background: var(--color-olive);
+      color: #FFFFFF;
+      border: none;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: background 0.2s;
+    }
+    .modal-btn:hover { background: var(--color-khaki-dark); }
+  </style>
+</head>
+<body>
+
+  <div class="bg-pattern"></div>
+
+  <div class="top-nav-bar">
+    <a href="menu.html">
+      <span>←</span>
+      <span>Back to gr8food portal Menu</span>
+    </a>
+  </div>
+
+
+  <div class="register-card">
+    <div class="brand-header-mini">
+      <div class="brand-badge">
+        <span class="icon">🍴</span>
+        <span>gr8food portal</span>
+      </div>
+      <h2>Create Account</h2>
+      <p class="sub">Join us for artisan cooking & fast doorstep delivery</p>
+    </div>
+
+    <form id="registerForm" autocomplete="off" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label for="regFullName">Full Name *</label>
+        <div class="input-wrapper">
+          <span class="input-icon">👤</span>
+          <input 
+            type="text" 
+            id="regFullName" 
+            class="input-field" 
+            placeholder="e.g. Sufi Ahmed" 
+            required 
+            autocomplete="name" 
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="regUsername">Username *</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🏷️</span>
+          <input 
+            type="text" 
+            id="regUsername" 
+            class="input-field" 
+            placeholder="Choose a username" 
+            required 
+            autocomplete="username" 
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="regPhone">Mobile Number * (Compulsory)</label>
+        <div class="input-wrapper">
+          <span class="input-icon">📞</span>
+          <input 
+            type="tel" 
+            id="regPhone" 
+            class="input-field" 
+            placeholder="e.g. 9876543210" 
+            required 
+            autocomplete="tel" 
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="regEmail">Email (Optional)</label>
+        <div class="input-wrapper">
+          <span class="input-icon">✉️</span>
+          <input 
+            type="email" 
+            id="regEmail" 
+            class="input-field" 
+            placeholder="e.g. name@mail.com" 
+            autocomplete="email" 
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="regPassword">Password *</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+          <input 
+            type="password" 
+            id="regPassword" 
+            class="input-field" 
+            placeholder="Create strong password" 
+            required 
+            autocomplete="new-password" 
+          />
+        </div>
+      </div>
+
+      <!-- Compulsory Terms Agreement -->
+      <div class="terms-box">
+        <input type="checkbox" id="termsCheck" required />
+        <label for="termsCheck">
+          I agree to the <span class="terms-link" onclick="openTermsModal()">Terms & Conditions</span> and authorize notifications for delivery & kitchen offers.
+        </label>
+      </div>
+
+      <button type="submit" id="regBtn" class="btn-submit">
+        <span>Create Account</span>
+        <span aria-hidden="true">→</span>
+      </button>
+    </form>
+
+    <div class="message" id="message" role="status" aria-live="polite"></div>
+
+    <div class="footer-link">
+      Already have an account? <a href="login.html">Sign In</a>
+    </div>
+  </div>
+
+  <div class="footer-food-thought">
+    “Fresh flavours, shared happiness.”
+  </div>
+
+  <!-- Terms & Conditions Modal -->
+  <div id="termsModal" class="modal-overlay" onclick="if(event.target===this)closeTermsModal()">
+    <div class="modal-box">
+      <h3>📜 gr8food portal — Terms of Service</h3>
+      <p>By creating an account and placing an order on gr8food portal, you agree to the following conditions:</p>
+      <ul>
+        <li><strong>Account & Details:</strong> You agree to provide a valid mobile number and accurate delivery location for timely delivery.</li>
+        <li><strong>Fresh Preparation:</strong> All food is prepared fresh upon order placement to ensure quality and warmth.</li>
+        <li><strong>Allergies:</strong> Please specify dietary requirements in the delivery notes before completing your order.</li>
+        <li><strong>Distance & Timing:</strong> Estimated delivery times and distance calculations are dynamic based on live map data.</li>
+      </ul>
+      <button class="modal-btn" onclick="acceptTermsAndClose()">I Understand & Agree</button>
+    </div>
+  </div>
+
+  <script>
+    const API = '/api';
+
+    function openTermsModal() {
+      document.getElementById('termsModal').style.display = 'flex';
+    }
+
+    function closeTermsModal() {
+      document.getElementById('termsModal').style.display = 'none';
+    }
+
+    function acceptTermsAndClose() {
+      document.getElementById('termsCheck').checked = true;
+      closeTermsModal();
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('regFullName').value.trim();
+      const username = document.getElementById('regUsername').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value.trim();
+      const termsAccepted = document.getElementById('termsCheck').checked;
+      const msg = document.getElementById('message');
+      const btn = document.getElementById('regBtn');
+
+      if (!termsAccepted) {
+        msg.style.color = 'var(--color-danger)';
+        msg.textContent = 'Please accept the Terms & Conditions to register.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Creating Account...';
+      msg.textContent = '';
+
+      try {
+        const res = await fetch(`${API}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            full_name: fullName,
+            username,
+            phone,
+            email: email || null,
+            password,
+            role: 'customer',
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(username)}`
+          })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          msg.style.color = 'var(--color-success)';
+          msg.textContent = '✅ Account created! Redirecting to login...';
+          setTimeout(() => window.location.replace('login.html'), 1000);
+        } else {
+          msg.style.color = 'var(--color-danger)';
+          msg.textContent = data.error || 'Registration failed';
+          btn.disabled = false;
+          btn.textContent = 'Create Account';
+        }
+      } catch (_) {
+        msg.style.color = 'var(--color-danger)';
+        msg.textContent = 'Server connection error. Please try again.';
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    }
+  </script>
+</body>
+</html>

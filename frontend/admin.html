@@ -1,0 +1,2393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>gr8food portal — Admin Kitchen & Operations Hub</title>
+  
+  <!-- Immediate Synchronous Authentication & Role Guard (Anti-Bypass & Zero-Flash) -->
+  <script>
+    (function enforceAdminAuth() {
+      try {
+        var stored = localStorage.getItem('gr8food_user');
+        if (!stored || stored === 'null') {
+          window.location.replace('login.html?auth=required');
+          return;
+        }
+        var user = JSON.parse(stored);
+        var role = ((user && user.role) || '').toLowerCase().trim();
+        if (role !== 'admin' && !role.includes('admin')) {
+          window.location.replace('login.html?auth=unauthorized');
+          return;
+        }
+        document.documentElement.classList.add('auth-verified');
+      } catch (err) {
+        localStorage.removeItem('gr8food_user');
+        window.location.replace('login.html?auth=required');
+      }
+    })();
+
+    // Source Protection Guard (Blocks Ctrl+U, F12, DevTools shortcuts, Save Page, and Right-Click)
+    (function initSourceGuard() {
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+      }, { passive: false });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || e.keyCode === 123) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && (
+          e.key === 'I' || e.key === 'i' || e.keyCode === 73 ||
+          e.key === 'J' || e.key === 'j' || e.keyCode === 74 ||
+          e.key === 'C' || e.key === 'c' || e.keyCode === 67
+        )) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.keyCode === 83)) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { capture: true, passive: false });
+    })();
+  </script>
+
+  <!-- Google Fonts: DM Serif Display & Manrope -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       ANTI-FLASH PROTECTION FOR ADMIN PORTAL
+       ========================================================================== */
+    html:not(.auth-verified) {
+      display: none !important;
+      visibility: hidden !important;
+    }
+
+    /* ==========================================================================
+       THEME CONFIGURATION VARIABLES (Earthy Cream & Muted Khaki Palette)
+       ========================================================================== */
+    :root {
+      --bg-cream: #FFF8ED;              /* Warm cream background */
+      --bg-cream-alt: #F7EFE1;          /* Deeper cream */
+      --color-khaki: #A89F8D;           /* Main brand colour, muted khaki */
+      --color-khaki-light: #EBE5DB;     /* Soft khaki tint */
+      --color-khaki-dark: #877D6B;      /* Deeper khaki */
+      --color-olive: #384338;           /* Dark olive for headings, sidebar & primary buttons */
+      --color-olive-dark: #272F27;      /* Deepest dark olive */
+      --color-olive-light: #4D5A4D;     /* Medium olive */
+      --card-bg: #FFFFFF;               /* Soft ivory / clean white */
+      
+      --text-dark: #343A32;             /* High-contrast body text */
+      --text-muted: #646E62;            /* Secondary muted text */
+      --text-light: #F8FAFC;            /* Clean light text on dark olive backgrounds */
+      
+      --color-success: #2D6A4F;
+      --color-danger: #9B2226;
+      --color-warning: #B07D1C;
+      
+      --border-subtle: rgba(56, 67, 56, 0.12);
+      --border-khaki: rgba(168, 159, 141, 0.6);
+      --shadow-sm: 0 2px 8px rgba(56, 67, 56, 0.05);
+      --shadow-md: 0 8px 24px rgba(56, 67, 56, 0.08);
+      --shadow-lg: 0 16px 40px rgba(56, 67, 56, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      
+      --font-heading: 'DM Serif Display', Georgia, serif;
+      --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-cream);
+      color: var(--text-dark);
+      font-family: var(--font-body);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+    }
+
+    h1, h2, h3, h4, .font-serif {
+      font-family: var(--font-heading);
+      color: var(--color-olive);
+      font-weight: 400;
+    }
+
+    /* Toast Notifications */
+    #toastContainer {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--color-olive-dark);
+      color: #FFFFFF;
+      padding: 12px 24px;
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-khaki);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 280px;
+      max-width: 90vw;
+      justify-content: center;
+      pointer-events: auto;
+      animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    .toast.error { border-bottom: 3px solid var(--color-danger); }
+    @keyframes slideUp { from { transform: translateY(30px) scale(0.96); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: 270px;
+      background: var(--color-olive);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+    .brand-section {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-heading);
+      font-size: 22px;
+      color: #FFFFFF;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .brand-section span.icon { color: var(--color-khaki); font-size: 20px; }
+    .brand-section span.portal-text { font-size: 11px; font-family: var(--font-body); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--color-khaki-light); display: block; margin-top: 2px; }
+
+    .nav-links { list-style: none; padding: 18px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .nav-btn {
+      display: flex; align-items: center; gap: 12px; padding: 11px 16px;
+      width: 100%; border-radius: var(--radius-sm); border: 1px solid transparent; background: transparent;
+      color: rgba(255, 255, 255, 0.85); font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; transition: all 0.2s;
+    }
+    .nav-btn:hover { background: rgba(255, 255, 255, 0.1); color: #FFFFFF; }
+    .nav-btn.active { background: var(--color-khaki); color: var(--color-olive-dark); font-weight: 700; }
+    .nav-badge {
+      margin-left: auto;
+      background: var(--color-danger);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 12px;
+    }
+    .sidebar-footer { padding: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+    .btn-logout {
+      width: 100%; padding: 11px; background: rgba(155, 34, 38, 0.2);
+      border: 1px solid rgba(155, 34, 38, 0.4); color: #FFCDD2; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; font-size: 13px;
+      transition: background 0.2s;
+    }
+    .btn-logout:hover { background: var(--color-danger); color: #fff; }
+
+    /* Main Content Wrapper */
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; background: var(--bg-cream); }
+    .top-header {
+      background: #FFFFFF;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+    }
+    .top-header h2 { font-size: 22px; color: var(--color-olive); }
+    .header-user { display: flex; align-items: center; gap: 12px; }
+    .header-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--color-khaki); background: var(--bg-cream); }
+
+    .content-body { padding: 28px 32px; }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Filters Bar */
+    .filter-pills-bar {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .filter-pill {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-dark);
+      padding: 7px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .filter-pill:hover, .filter-pill.active {
+      background: var(--color-olive);
+      color: #FFFFFF;
+      border-color: var(--color-olive);
+    }
+    .pill-count {
+      background: var(--bg-cream);
+      color: var(--color-olive);
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: var(--radius-full);
+    }
+    .filter-pill.active .pill-count {
+      background: #FFFFFF;
+      color: var(--color-olive-dark);
+    }
+
+    /* Cards & Tables */
+    .table-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+      margin-bottom: 24px;
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13.5px; }
+    th {
+      background: var(--bg-cream-alt);
+      color: var(--color-olive);
+      font-weight: 700;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 248, 237, 0.4); }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .status-pending { background: #FEF3C7; color: var(--color-warning); }
+    .status-accepted { background: var(--color-success-bg); color: var(--color-success); }
+    .status-rejected { background: var(--color-danger-bg); color: var(--color-danger); }
+    .status-completed { background: #E2E8F0; color: #475569; }
+
+    /* Form Panels */
+    .form-panel {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 12.5px; font-weight: 700; color: var(--color-olive); margin-bottom: 6px;
+    }
+    .admin-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg-cream);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-family: inherit;
+      color: var(--text-dark);
+      outline: none;
+      transition: all 0.2s;
+    }
+    .admin-input:focus {
+      background: #FFFFFF;
+      border-color: var(--color-khaki-dark);
+      box-shadow: 0 0 0 3px rgba(168, 159, 141, 0.2);
+    }
+
+    .btn-action {
+      background: var(--color-olive);
+      color: #FFFFFF;
+      border: none;
+      padding: 11px 20px;
+      border-radius: var(--radius-full);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-action:hover { background: var(--color-khaki-dark); }
+
+    /* Modals */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(39, 47, 39, 0.7);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    .modal-box {
+      background: #FFFFFF;
+      border: 1px solid var(--border-khaki);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow-lg);
+    }
+    .time-preset-btn {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-khaki);
+      color: var(--color-olive);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .time-preset-btn.active, .time-preset-btn:hover {
+      background: var(--color-olive);
+      color: #FFFFFF;
+      border-color: var(--color-olive);
+    }
+
+    @media print {
+      body * { visibility: hidden !important; }
+      #adminPrintableBill, #adminPrintableBill * { visibility: visible !important; }
+      #adminPrintableBill {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        max-width: 500px !important;
+        margin: 0 auto !important;
+        padding: 16px !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .modal-overlay {
+        background: none !important;
+        position: static !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer"></div>
+
+  <!-- Left Sidebar Navigation -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand-section">
+        <span class="icon">🍴</span>
+        <div>
+          <span>gr8food</span>
+          <span class="portal-text">Kitchen Hub</span>
+        </div>
+      </div>
+
+      <ul class="nav-links">
+        <li>
+          <button class="nav-btn active" onclick="switchTab('orders', this)">
+            <span>📦</span>
+            <span>Live Orders</span>
+            <span class="nav-badge" id="pendingOrdersCount" style="display:none;">0</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" onclick="switchTab('menu', this)">
+            <span>🍽️</span>
+            <span>Menu & Stocks</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" onclick="switchTab('sales', this)">
+            <span>📊</span>
+            <span>Sales & Revenue</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" onclick="switchTab('catering', this)">
+            <span>🍗</span>
+            <span>Party Combos</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" onclick="switchTab('offers', this)">
+            <span>📢</span>
+            <span>Promo Banner</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" onclick="switchTab('reviews', this)">
+            <span>💬</span>
+            <span>Guest Reviews</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" onclick="switchTab('cd', this)">
+            <span>🔐</span>
+            <span>Customer Directory</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" onclick="switchTab('profile', this)">
+            <span>⚙️</span>
+            <span>Kitchen & Profile</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" id="securityNavBtn" onclick="switchTab('security', this)" style="position: relative;">
+            <span>🛡️</span>
+            <span>Security Monitor</span>
+            <span id="securityAlertBadge" style="display:none; position:absolute; top:6px; right:8px; background:#9B2226; color:#fff; border-radius:9999px; font-size:10px; font-weight:800; padding:1px 6px; min-width:18px; text-align:center;">0</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="logoutAdmin()">🚪 Sign Out Admin</button>
+    </div>
+  </aside>
+
+  <!-- Main Content Body -->
+  <main class="main-wrapper">
+    <!-- Global Emergency Siren Alarm Banner -->
+    <div id="globalEmergencyAlertBanner" style="display:none; background:#9B2226; color:#FFF8ED; padding:12px 20px; font-weight:700; font-size:13.5px; justify-content:space-between; align-items:center; border-bottom:2px solid #5C1014; z-index:100; flex-wrap:wrap; gap:10px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:22px;">🚨</span>
+        <span id="emergencyAlertText">SECURITY THREAT DETECTED</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button onclick="switchTab('security', document.getElementById('securityNavBtn')); dismissEmergencyBanner();" style="background:#FFF8ED; color:#9B2226; border:none; padding:6px 14px; border-radius:9999px; font-weight:800; font-size:12px; cursor:pointer;">Inspect Threat Details →</button>
+        <button onclick="dismissEmergencyBanner()" style="background:transparent; border:1px solid rgba(255,255,255,0.4); color:#FFF8ED; padding:6px 12px; border-radius:9999px; font-weight:700; font-size:12px; cursor:pointer;">Silence Alarm ✕</button>
+      </div>
+    </div>
+
+    <header class="top-header">
+      <h2 id="sectionTitle">Live Kitchen Orders</h2>
+      <div class="header-user">
+        <a href="menu.html" target="_blank" style="font-size: 13px; font-weight: 700; color: var(--color-olive); margin-right: 10px;">
+          🔗 View Customer Storefront ↗
+        </a>
+        <img id="adminHeaderAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" class="header-avatar" alt="Admin" />
+        <span style="font-weight: 700; font-size: 13.5px;" id="adminHeaderName">Super Admin</span>
+      </div>
+    </header>
+
+    <div class="content-body">
+      
+      <!-- 1. Live Orders Tab -->
+      <section id="tab-orders" class="tab-section active">
+        <div class="filter-pills-bar">
+          <button class="filter-pill active" onclick="filterOrders('ALL', this)">
+            <span>All Orders</span>
+            <span class="pill-count" id="countAll">0</span>
+          </button>
+          <button class="filter-pill" onclick="filterOrders('FIRST_TIME', this)">
+            <span>🆕 New Customers</span>
+            <span class="pill-count" id="countFirstTime">0</span>
+          </button>
+          <button class="filter-pill" onclick="filterOrders('Pending', this)">
+            <span>Pending Confirmation</span>
+            <span class="pill-count" id="countPending">0</span>
+          </button>
+          <button class="filter-pill" onclick="filterOrders('Accepted', this)">
+            <span>Currently Cooking</span>
+            <span class="pill-count" id="countAccepted">0</span>
+          </button>
+          <button class="filter-pill" onclick="filterOrders('Completed', this)">
+            <span>Completed / Served</span>
+            <span class="pill-count" id="countCompleted">0</span>
+          </button>
+          <button class="filter-pill" onclick="filterOrders('Rejected', this)">
+            <span>Rejected</span>
+            <span class="pill-count" id="countRejected">0</span>
+          </button>
+          <input type="text" id="orderSearchInput" class="admin-input" placeholder="🔍 Search by Customer, Item, ID, ORD-..." style="margin-left: auto; width: 240px; padding: 6px 12px; font-size: 13px;" oninput="renderOrdersTable()">
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Order # & Customer / Address</th>
+                <th>Dishes Ordered</th>
+                <th>Total Bill</th>
+                <th>Payment Status</th>
+                <th>Kitchen State</th>
+                <th>Order Time</th>
+                <th>Kitchen Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 2. Menu & Stocks Tab -->
+      <section id="tab-menu" class="tab-section">
+        <div class="form-panel">
+          <h3 style="margin-bottom: 16px; font-size: 20px;" id="dishFormHeading">Add New Dish to gr8food Menu</h3>
+          <form id="menuDishForm" onsubmit="handleDishSubmit(event)">
+            <input type="hidden" id="editDishId" value="">
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1.5fr; gap: 14px;">
+              <div class="form-group">
+                <label>Dish Name *</label>
+                <input type="text" id="dishNameInput" class="admin-input" placeholder="e.g. Special Dum Biryani" required>
+              </div>
+              <div class="form-group">
+                <label>Price (₹) *</label>
+                <input type="number" id="dishPriceInput" class="admin-input" placeholder="e.g. 150" min="1" step="0.5" required>
+              </div>
+              <div class="form-group">
+                <label>Category *</label>
+                <select id="dishCategoryInput" class="admin-input" required>
+                  <option value="Biryani & Rice">Biryani & Rice</option>
+                  <option value="Curries & Gravies">Curries & Gravies</option>
+                  <option value="Breads & Tandoor">Breads & Tandoor</option>
+                  <option value="Rice & Meals">Rice & Meals</option>
+                  <option value="Combos & Starters">Combos & Starters</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="dishDescInput" rows="2" class="admin-input" placeholder="Short appetizing description of ingredients and spices..."></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px; align-items: center;">
+              <div class="form-group">
+                <label>Dish Photograph URL (or Upload below)</label>
+                <input type="text" id="dishImageUrlInput" class="admin-input" placeholder="https://images.unsplash.com/photo-...">
+              </div>
+              <div class="form-group">
+                <label>Upload Dish Photo</label>
+                <input type="file" id="dishImageFileInput" accept="image/*" onchange="handleDishFileSelect(event)" style="font-size: 12px;">
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 8px;">
+              <button type="submit" class="btn-action" id="btnSaveDish">Add Dish to Menu</button>
+              <button type="button" onclick="resetDishForm()" style="background: transparent; border: 1px solid var(--border-subtle); color: var(--text-dark); padding: 8px 18px; border-radius: var(--radius-full); font-weight: 700; cursor: pointer;">Reset Form</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Dish Name</th>
+                <th>Category</th>
+                <th>Price (₹)</th>
+                <th>Description</th>
+                <th>Stock Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="menuTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. Sales & Revenue Tab -->
+      <section id="tab-sales" class="tab-section">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          <div class="form-panel" style="padding: 18px; text-align: center;">
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--text-muted);">TOTAL REVENUE</div>
+            <div style="font-family: var(--font-heading); font-size: 32px; color: var(--color-olive); margin-top: 4px;" id="statTotalRev">₹0</div>
+          </div>
+          <div class="form-panel" style="padding: 18px; text-align: center;">
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--text-muted);">ONLINE UPI REVENUE</div>
+            <div style="font-family: var(--font-heading); font-size: 32px; color: var(--color-success); margin-top: 4px;" id="statOnlineRev">₹0</div>
+          </div>
+          <div class="form-panel" style="padding: 18px; text-align: center;">
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--text-muted);">CASH (COD) REVENUE</div>
+            <div style="font-family: var(--font-heading); font-size: 32px; color: var(--color-warning); margin-top: 4px;" id="statCashRev">₹0</div>
+          </div>
+          <div class="form-panel" style="padding: 18px; text-align: center;">
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--text-muted);">ORDERS FULFILLED</div>
+            <div style="font-family: var(--font-heading); font-size: 32px; color: var(--color-olive); margin-top: 4px;" id="statOrderCount">0</div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Mode</th>
+                <th>Items</th>
+                <th>Payment</th>
+                <th>Revenue</th>
+                <th>Completed Time</th>
+              </tr>
+            </thead>
+            <tbody id="salesTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 4. Party Combos Tab -->
+      <section id="tab-catering" class="tab-section">
+        <div class="form-panel" style="max-width: 640px;">
+          <h3 style="margin-bottom: 16px; font-size: 20px;">Add New Catering Feast for Moving Banner</h3>
+          <form onsubmit="addCateringCombo(event)">
+            <div style="display: flex; gap: 12px;">
+              <div class="form-group" style="width: 100px;">
+                <label>Icon</label>
+                <input type="text" id="comboIcon" class="admin-input" value="🍗" required>
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label>Feast Title</label>
+                <input type="text" id="comboTitle" class="admin-input" placeholder="e.g. Royal Mutton Biryani Feast" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Includes (Description)</label>
+              <input type="text" id="comboDesc" class="admin-input" placeholder="e.g. Biryani + Kabab + Gulab Jamun + Drinks" required>
+            </div>
+
+            <div class="form-group">
+              <label>Guest Capacity / Badge</label>
+              <input type="text" id="comboBadge" class="admin-input" value="👥 50 – 300+ Guests">
+            </div>
+
+            <button type="submit" class="btn-action">Add Feast to Live Slider</button>
+          </form>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Icon</th>
+                <th>Title</th>
+                <th>Items Included</th>
+                <th>Guest Badge</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="cateringTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. Promo Banner Tab -->
+      <section id="tab-offers" class="tab-section">
+        <div class="form-panel" style="max-width: 640px;">
+          <h3 style="margin-bottom: 16px; font-size: 20px;">Broadcast Top Promo Banner</h3>
+          <form onsubmit="updateOffer(event)">
+            <div class="form-group">
+              <label>Promo Text / Headline</label>
+              <textarea id="offerInput" rows="3" class="admin-input" placeholder="e.g. 🔥 Weekend Special: Free delivery on orders above ₹300!" required></textarea>
+            </div>
+            <button type="submit" class="btn-action">Publish Banner</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- 6. Guest Reviews Tab -->
+      <section id="tab-reviews" class="tab-section">
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Review</th>
+                <th>Date</th>
+                <th>Chef Reply</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="reviewsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 7. Customer Directory (CD) Tab -->
+      <section id="tab-cd" class="tab-section">
+        <div class="form-panel" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h3 style="font-size: 20px; margin-bottom: 4px;">🔐 Cash Dispensary (Customer Directory)</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">Confidential customer database for promotional notifications.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="cdSearchInput" class="admin-input" placeholder="🔍 Search customers..." style="width: 200px; display: none;" oninput="filterCDData()">
+            <button onclick="lockCD()" style="background: var(--color-olive); color: #fff; border: none; padding: 8px 16px; border-radius: var(--radius-full); cursor: pointer; font-weight: bold; font-size: 12px;">🔒 Lock Directory</button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Mobile Number</th>
+                <th>Email Address</th>
+                <th>Default Address</th>
+                <th>Username</th>
+                <th>Registered</th>
+              </tr>
+            </thead>
+            <tbody id="cdTableBody">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                  🔒 Directory is locked. Authentication required to inspect records.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 8. Kitchen Location & Admin Profile Tab -->
+      <section id="tab-profile" class="tab-section">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          
+          <!-- Kitchen Location & Base Settings -->
+          <div class="form-panel">
+            <h3 style="margin-bottom: 16px; font-size: 20px;">📍 Restaurant Kitchen Location & Delivery Settings</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+              Customer map distances and delivery charges are calculated automatically using this restaurant location as the origin base point.
+            </p>
+            <form onsubmit="saveKitchenSettings(event)">
+              <div class="form-group">
+                <label>Restaurant Kitchen Address * (Distance Base Point)</label>
+                <textarea id="adminRestaurantAddress" rows="3" class="admin-input" placeholder="e.g. Brigade Road, Central Bangalore, Karnataka 560001" required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Kitchen Contact Hotline</label>
+                <input type="tel" id="adminRestaurantPhone" class="admin-input" placeholder="e.g. 8073349233">
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                  <label>Delivery Rate (₹ / km)</label>
+                  <input type="number" id="adminDeliveryRate" class="admin-input" value="9" min="1" step="0.5">
+                </div>
+                <div class="form-group">
+                  <label>Minimum Delivery Fee (₹)</label>
+                  <input type="number" id="adminMinDeliveryFee" class="admin-input" value="18" min="0" step="1">
+                </div>
+              </div>
+
+              <button type="submit" class="btn-action" style="width: 100%;">Save Kitchen Location & Rates</button>
+            </form>
+          </div>
+
+          <!-- Admin Profile & Credentials -->
+          <div class="form-panel">
+            <h3 style="margin-bottom: 16px; font-size: 20px;">⚙️ Admin Credentials & Security</h3>
+            <form onsubmit="saveAdminProfile(event)">
+              <div class="form-group" style="text-align: center; margin-bottom: 16px;">
+                <img id="adminProfileImgPreview" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Admin Avatar" style="width: 74px; height: 74px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-khaki); background: #fff; margin-bottom: 6px;">
+                <div>
+                  <input type="file" accept="image/*" style="font-size: 12px;" onchange="handleAdminAvatarUpload(event)">
+                  <input type="hidden" id="adminAvatarUrl" value="">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Admin Name</label>
+                <input type="text" id="adminFullName" class="admin-input" required>
+              </div>
+              <div class="form-group">
+                <label>Admin Username</label>
+                <input type="text" id="adminUsername" class="admin-input" required>
+              </div>
+
+              <div class="form-group">
+                <label>New Password (Optional)</label>
+                <input type="password" id="adminNewPassword" class="admin-input" placeholder="Leave blank to keep current">
+              </div>
+
+              <div class="form-group">
+                <label>Current Password (Required to save changes)</label>
+                <input type="password" id="adminCurrentPassword" class="admin-input" placeholder="Current password">
+              </div>
+
+              <button type="submit" class="btn-action" style="width: 100%;">Update Admin Profile</button>
+            </form>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 9. Security Monitor Tab -->
+      <section id="tab-security" class="tab-section">
+        <div class="section-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h3 style="margin-bottom:4px;">🛡️ Security Monitor & Threat Siren Alarm</h3>
+              <p style="font-size:13px; color:var(--text-muted);">Real-time intrusion detection, exploit blocker, and live audio alarms.</p>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button id="btnToggleAlarmSound" class="btn-action" onclick="toggleAlarmSound()" style="background:var(--color-olive); color:#fff;">
+                🔊 Alarm Siren: Active
+              </button>
+              <button class="btn-action" onclick="testAlarmSiren()" style="background:var(--color-khaki-dark, #877D6B); color:#fff;">
+                🔔 Test Siren Sound
+              </button>
+              <button id="btnToggleLockdown" class="btn-action" onclick="toggleLockdown()" style="background:#9B2226; color:#fff;">
+                🔒 Activate Lockdown
+              </button>
+              <button class="btn-action" onclick="loadSecurityAlerts()" style="background:var(--color-olive);">
+                🔄 Refresh
+              </button>
+              <button class="btn-action" onclick="clearAllAlerts()" style="background:var(--color-danger, #9B2226); color:#fff;">
+                🗑️ Clear All
+              </button>
+            </div>
+          </div>
+          <div id="lockdownStatusBanner" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:16px; font-weight:700; font-size:13.5px;"></div>
+          <div id="securityAlertsList" style="display:flex; flex-direction:column; gap:10px;">
+            <p style="color:var(--text-muted); text-align:center; padding:40px 0;">Loading security alerts...</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Accept Order & Cooking Time Modal -->
+  <div id="acceptOrderModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="color: var(--color-success); margin-bottom: 6px;">🍳 Accept Order & Set Cooking Time</h3>
+      <p id="acceptOrderSubtext" style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Set estimated cooking time for Customer:</p>
+
+      <label style="font-size: 12px; font-weight: 700; color: var(--color-olive); display: block; margin-bottom: 8px;">Quick Cooking Time Presets:</label>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
+        <button type="button" class="time-preset-btn" onclick="selectTimePreset(10, this)">⚡ 10 mins</button>
+        <button type="button" class="time-preset-btn active" onclick="selectTimePreset(15, this)">⏱️ 15 mins</button>
+        <button type="button" class="time-preset-btn" onclick="selectTimePreset(20, this)">🥘 20 mins</button>
+        <button type="button" class="time-preset-btn" onclick="selectTimePreset(30, this)">🍲 30 mins</button>
+        <button type="button" class="time-preset-btn" onclick="selectTimePreset(45, this)">⏳ 45 mins</button>
+      </div>
+
+      <div class="form-group">
+        <label>Custom Cooking Time (Minutes):</label>
+        <input type="number" id="customCookingMinutes" class="admin-input" value="15" min="1" max="180">
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn-action" style="flex: 1; background: var(--color-success);" onclick="submitAcceptOrder()">🔥 Accept & Start Cooking</button>
+        <button onclick="closeAcceptModal()" style="flex: 1; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-dark); border-radius: var(--radius-full); cursor: pointer; font-weight: 700;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reject Order Modal -->
+  <div id="rejectOrderModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="color: var(--color-danger); margin-bottom: 6px;">❌ Reject Order</h3>
+      <p id="rejectOrderSubtext" style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Select reason to display on Customer's screen:</p>
+
+      <div class="form-group">
+        <label style="color: var(--color-olive);">Select Reason *</label>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-dark); cursor: pointer; background: var(--color-danger-bg); padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(155, 34, 38, 0.3);">
+            <input type="radio" name="rejectReasonPreset" value="No available stocks for now" checked>
+            <span><strong>No available stocks for now</strong> (Recommended)</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-dark); cursor: pointer; background: var(--bg-cream); padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+            <input type="radio" name="rejectReasonPreset" value="Kitchen is currently overloaded / peak rush">
+            <span>Kitchen is currently overloaded</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn-action" style="flex: 1; background: var(--color-danger);" onclick="submitRejectOrder()">Confirm Rejection</button>
+        <button onclick="closeRejectModal()" style="flex: 1; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-dark); border-radius: var(--radius-full); cursor: pointer; font-weight: 700;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CD Auth Modal -->
+  <div id="cdLockModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="color: var(--color-olive); margin-bottom: 6px;">🔐 Unlock Customer Directory (CD)</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Enter your Authorization Key (Reverse Admin Password):</p>
+      
+      <div class="form-group">
+        <label>Authorization Security Key</label>
+        <input type="password" id="reversePassInput" class="admin-input" placeholder="Type key..." onkeydown="if(event.key==='Enter')verifyCDAccess()">
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 18px;">
+        <button class="btn-action" style="flex: 1;" onclick="verifyCDAccess()">Unlock Directory</button>
+        <button onclick="closeCDModal()" style="flex: 1; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-dark); border-radius: var(--radius-full); cursor: pointer; font-weight: 700;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Reply Modal -->
+  <div id="replyModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="color: var(--color-olive); margin-bottom: 6px;">💬 Reply to Guest Review</h3>
+      <div class="form-group">
+        <label>Chef Response Message *</label>
+        <textarea id="replyModalInput" rows="3" class="admin-input" placeholder="e.g. Thank you for dining with us! We look forward to serving you again."></textarea>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 16px;">
+        <button class="btn-action" style="flex: 1;" onclick="submitAdminReply()">Publish Reply</button>
+        <button onclick="closeReplyModal()" style="flex: 1; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-dark); border-radius: var(--radius-full); cursor: pointer; font-weight: 700;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Bill & Invoice Modal -->
+  <div id="adminBillModal" class="modal-overlay" onclick="if(event.target===this)closeAdminBillModal()">
+    <div class="modal-box" style="max-width: 580px; width: 95%; max-height: 90vh; overflow-y: auto;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 14px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+        <div>
+          <h3 style="color: var(--color-olive); margin:0; font-size: 20px;">🧾 Order Invoice & Bill</h3>
+          <p style="font-size: 12.5px; color: var(--text-muted); margin: 3px 0 0;">Official gr8food portal Kitchen & Doorstep Delivery Bill</p>
+        </div>
+        <button onclick="closeAdminBillModal()" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text-muted);">✕</button>
+      </div>
+
+      <!-- Printable Bill Content Area -->
+      <div id="adminPrintableBill" style="background:#FFFFFF; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:20px; color:#222; font-family:var(--font-body);">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Bill Action Buttons -->
+      <div id="adminBillActionBtns" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:16px;">
+        <button id="adminBtnPrintBill" class="btn-action" style="background: var(--color-olive); display:flex; align-items:center; justify-content:center; gap:6px;" onclick="printAdminBill()">
+          <span>🖨️</span> Print Hard Copy
+        </button>
+        <button id="adminBtnDownloadSoftCopy" class="btn-action" style="background: var(--color-khaki-dark); display:flex; align-items:center; justify-content:center; gap:6px;" onclick="downloadAdminSoftCopy()">
+          <span>📥</span> Download Soft Copy
+        </button>
+        <button id="adminBtnWaSoftCopy" class="btn-action" style="background: #25D366; color:#fff; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="sendSoftCopyWhatsApp()">
+          <span>📲</span> Send to WhatsApp
+        </button>
+        <button id="adminBtnEmailSoftCopy" class="btn-action" style="background: #3B5998; color:#fff; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="sendSoftCopyEmail()">
+          <span>✉️</span> Send via Email
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT ================= -->
+  <script>
+    const API = '/api';
+
+    let currentAdmin = null;
+    let cachedOrders = [];
+    let cachedMenu = [];
+    let activeOrderFilter = 'ALL';
+    let isCDUnlocked = false;
+    let cdCustomersData = [];
+    let activeActionOrderId = null;
+    let activeReplyReviewId = null;
+
+    // Toast Function
+    function showToast(msg, isError = false) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${isError ? 'error' : ''}`;
+      toast.textContent = msg;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    // Session Check & Admin Verification Guard
+    (function initAdminSession() {
+      const stored = localStorage.getItem('gr8food_user');
+      if (!stored || stored === 'null') {
+        window.location.replace('login.html?auth=required');
+        return;
+      }
+      try {
+        const user = JSON.parse(stored);
+        const role = ((user && user.role) || '').toLowerCase().trim();
+        if (role !== 'admin' && !role.includes('admin')) {
+          window.location.replace('login.html?auth=unauthorized');
+          return;
+        }
+        currentAdmin = user;
+        document.documentElement.classList.add('auth-verified');
+        updateHeaderUI();
+
+        // Secure Global Fetch Interceptor for Admin API Requests
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options) {
+          options = options || {};
+          options.headers = options.headers || {};
+          if (currentAdmin && currentAdmin.username) {
+            if (options.headers instanceof Headers) {
+              options.headers.set('x-admin-user', currentAdmin.username);
+              options.headers.set('x-admin-role', 'admin');
+            } else {
+              options.headers['x-admin-user'] = currentAdmin.username;
+              options.headers['x-admin-role'] = 'admin';
+            }
+          }
+          return originalFetch.call(this, url, options);
+        };
+      } catch (err) {
+        localStorage.removeItem('gr8food_user');
+        window.location.replace('login.html?auth=required');
+      }
+    })();
+
+    function updateHeaderUI() {
+      if (!currentAdmin) return;
+      document.getElementById('adminHeaderName').textContent = currentAdmin.full_name || currentAdmin.username;
+      if (currentAdmin.avatar) {
+        document.getElementById('adminHeaderAvatar').src = currentAdmin.avatar;
+      }
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem('gr8food_user');
+      window.location.replace('login.html');
+    }
+
+    // Tab Navigation
+    function switchTab(tabId, btn) {
+      if (tabId === 'cd' && !isCDUnlocked) {
+        openCDLockModal();
+        return;
+      }
+
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) target.classList.add('active');
+      if (btn) btn.classList.add('active');
+
+      const titles = {
+        'orders': 'Live Kitchen Orders',
+        'menu': 'Menu Dishes & Stock Controls',
+        'sales': 'Sales Revenue & Reports',
+        'catering': 'Party Combos & Banquet Feasts',
+        'offers': 'Promo Broadcast Banner',
+        'reviews': 'Customer Reviews & Replies',
+        'cd': 'Customer Directory (CD Vault)',
+        'profile': 'Restaurant Location & Admin Settings',
+        'security': 'Security Monitor & Lockdown Control'
+      };
+      document.getElementById('sectionTitle').textContent = titles[tabId] || 'Admin Hub';
+
+      if (tabId === 'orders') loadOrders();
+      if (tabId === 'menu') loadAdminMenu();
+      if (tabId === 'sales') loadSalesReport();
+      if (tabId === 'catering') loadAdminCombos();
+      if (tabId === 'offers') loadOffer();
+      if (tabId === 'reviews') loadReviews();
+      if (tabId === 'profile') { loadAdminProfile(); loadKitchenSettings(); }
+      if (tabId === 'security') loadSecurityAlerts();
+    }
+
+    // 1. ORDERS
+    async function loadOrders(isBackground = false) {
+      try {
+        const res = await fetch(`${API}/orders`);
+        if (!res.ok) return;
+        cachedOrders = await res.json();
+
+        const pending = cachedOrders.filter(o => o.status === 'Pending');
+        const accepted = cachedOrders.filter(o => o.status === 'Accepted');
+        const completed = cachedOrders.filter(o => o.status === 'Completed');
+        const rejected = cachedOrders.filter(o => o.status === 'Rejected');
+        const firstTime = cachedOrders.filter(o => o.isFirstOrder || o.is_first_order);
+
+        document.getElementById('countAll').textContent = cachedOrders.length;
+        if (document.getElementById('countFirstTime')) {
+          document.getElementById('countFirstTime').textContent = firstTime.length;
+        }
+        document.getElementById('countPending').textContent = pending.length;
+        document.getElementById('countAccepted').textContent = accepted.length;
+        document.getElementById('countCompleted').textContent = completed.length;
+        document.getElementById('countRejected').textContent = rejected.length;
+
+        const badge = document.getElementById('pendingOrdersCount');
+        if (pending.length > 0) {
+          badge.textContent = pending.length;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+
+        renderOrdersTable();
+      } catch (err) {
+        if (!isBackground) showToast('Failed to load orders', true);
+      }
+    }
+
+    function filterOrders(status, btn) {
+      activeOrderFilter = status;
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderOrdersTable();
+    }
+
+    function renderOrdersTable() {
+      const tbody = document.getElementById('ordersTableBody');
+      const searchQuery = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
+
+      let list = cachedOrders;
+      if (activeOrderFilter === 'FIRST_TIME') {
+        list = list.filter(o => o.isFirstOrder || o.is_first_order);
+      } else if (activeOrderFilter !== 'ALL') {
+        list = list.filter(o => o.status === activeOrderFilter);
+      }
+
+      if (searchQuery) {
+        list = list.filter(o => 
+          (o.customer || '').toLowerCase().includes(searchQuery) ||
+          (o.orderCode || o.order_code || '').toLowerCase().includes(searchQuery) ||
+          (Array.isArray(o.items) ? o.items.join(' ') : (o.items || '')).toLowerCase().includes(searchQuery) ||
+          String(o.id).includes(searchQuery)
+        );
+      }
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--text-muted);">No orders found for this view.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(o => {
+        let statusClass = 'status-pending';
+        if (o.status === 'Accepted') statusClass = 'status-accepted';
+        if (o.status === 'Completed') statusClass = 'status-completed';
+        if (o.status === 'Rejected') statusClass = 'status-rejected';
+
+        const orderDisplayCode = o.orderCode || o.order_code || `ORD-${o.id}`;
+        const isFirst = !!(o.isFirstOrder || o.is_first_order);
+        const billPref = o.billPreference || o.bill_preference || 'Soft Copy';
+
+        return `
+          <tr style="${o.status === 'Pending' ? 'background: rgba(168, 159, 141, 0.12);' : ''}">
+            <td>
+              <div style="display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
+                <strong style="color:var(--color-olive); font-size:14px;">#${escapeHtml(orderDisplayCode)}</strong>
+                <span style="font-weight:700;">• 👤 ${escapeHtml(o.customer)}</span>
+                ${isFirst ? `
+                  <span style="background:#E8F5E9; color:#2E7D32; border:1px solid #A5D6A7; font-size:10px; font-weight:800; padding:2px 7px; border-radius:var(--radius-full); display:inline-flex; align-items:center; gap:2px;">
+                    🆕 New Customer (1st Order)
+                  </span>
+                ` : ''}
+              </div>
+
+              <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                <span style="padding:2px 8px; border-radius:var(--radius-full); font-size:11px; font-weight:bold; background:var(--color-olive); color:#fff;">
+                  ${escapeHtml(o.dineOption || 'Dine-In')}
+                </span>
+                <span style="background:${billPref === 'Hard Copy' ? '#FFF3E0' : '#F3E5F5'}; color:${billPref === 'Hard Copy' ? '#E65100' : '#6A1B9A'}; border:1px solid ${billPref === 'Hard Copy' ? '#FFE0B2' : '#E1BEE7'}; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:var(--radius-full);">
+                  ${billPref === 'Hard Copy' ? '🖨️ Hard Copy Bill Requested' : billPref === 'Both' ? '📑 Soft & Hard Bill' : '📄 Soft Copy Bill'}
+                </span>
+              </div>
+
+              ${o.dineOption === 'Delivery to Home' ? `
+                <div style="font-size:12px; color:var(--color-olive); margin-top:6px; background:var(--bg-cream); padding:8px 10px; border-radius:var(--radius-sm); border-left:3px solid var(--color-khaki);">
+                  📍 <strong>Address:</strong> ${escapeHtml(o.deliveryAddress || 'N/A')}<br>
+                  📞 <strong>Phone:</strong> ${escapeHtml(o.deliveryPhone || 'N/A')}<br>
+                  🛵 <strong>Map Distance:</strong> ${o.distance_km || 0} km (Delivery Fee: ₹${o.delivery_fee || 0})
+                  ${o.deliveryNotes ? `<br>💬 <em>Note: ${escapeHtml(o.deliveryNotes)}</em>` : ''}
+                </div>
+              ` : ''}
+            </td>
+            <td>
+              <div style="font-weight: 600;">${Array.isArray(o.items) ? o.items.map(escapeHtml).join(', ') : escapeHtml(o.items || '')}</div>
+            </td>
+            <td><strong style="color:var(--color-olive); font-family:var(--font-heading); font-size:17px;">₹${o.total}</strong></td>
+            <td>
+              <div style="font-weight:bold;">${escapeHtml(o.paymentMode || 'Cash')}</div>
+              ${o.paymentMode === 'Online' ? `
+                <div style="font-size:11px; margin-top:3px;">
+                  <span style="color:var(--text-muted);">UTR:</span> <code style="color:var(--color-olive); font-weight:bold;">${escapeHtml(o.transactionId || 'Pending')}</code><br>
+                  <span style="color:${o.paymentStatus === 'Verified & Received' ? 'var(--color-success)' : 'var(--color-warning)'}; font-weight: 700;">
+                    ${o.paymentStatus === 'Verified & Received' ? '✅ Paid & Verified' : '⏳ Awaiting Verification'}
+                  </span>
+                  ${o.paymentStatus !== 'Verified & Received' ? `
+                    <br><button onclick="verifyPayment(${o.id})" style="background:var(--color-success); color:#fff; border:none; padding:3px 9px; border-radius:var(--radius-full); font-size:11px; font-weight:bold; cursor:pointer; margin-top:4px;">✓ Verify Payment</button>
+                  ` : ''}
+                </div>
+              ` : `
+                <div style="font-size:11px; margin-top:3px;">
+                  <span style="color:${o.paymentStatus === 'Verified & Received' ? 'var(--color-success)' : 'var(--color-warning)'}; font-weight: 700;">
+                    ${o.paymentStatus === 'Verified & Received' ? '✅ Cash Received' : '⏳ Cash on Delivery'}
+                  </span>
+                  ${o.paymentStatus !== 'Verified & Received' ? `
+                    <br><button onclick="verifyPayment(${o.id})" style="background:var(--color-olive); color:#fff; border:none; padding:3px 9px; border-radius:var(--radius-full); font-size:11px; font-weight:bold; cursor:pointer; margin-top:4px;">💵 Mark Cash Paid</button>
+                  ` : ''}
+                </div>
+              `}
+            </td>
+            <td>
+              <span class="status-badge ${statusClass}">${o.status}</span>
+              ${o.status === 'Accepted' && o.cookingTime ? `
+                <div style="font-size: 11px; color: var(--color-success); margin-top: 4px; font-weight: 700;">
+                  ⏱️ Cooking: ~${escapeHtml(o.cookingTime)}
+                </div>
+              ` : ''}
+              ${o.status === 'Rejected' && o.rejectionReason ? `
+                <div style="font-size: 11px; color: var(--color-danger); margin-top: 4px; font-weight: 600;">
+                  ⚠️ ${escapeHtml(o.rejectionReason)}
+                </div>
+              ` : ''}
+            </td>
+            <td style="font-size:12px; color:var(--text-muted);">${o.time || ''}</td>
+            <td>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                ${o.status === 'Pending' ? `
+                  <button onclick="openAcceptModal(${o.id})" style="background:var(--color-success); color:#fff; border:none; padding:6px 12px; border-radius:var(--radius-full); font-weight:700; font-size:12px; cursor:pointer;">
+                    🔥 Accept
+                  </button>
+                  <button onclick="openRejectModal(${o.id})" style="background:var(--color-danger); color:#fff; border:none; padding:6px 12px; border-radius:var(--radius-full); font-weight:700; font-size:12px; cursor:pointer;">
+                    ❌ Reject
+                  </button>
+                ` : o.status === 'Accepted' ? `
+                  <button onclick="updateOrderStatusDirect(${o.id}, 'Completed')" style="background:var(--color-olive); color:#fff; border:none; padding:6px 12px; border-radius:var(--radius-full); font-weight:700; font-size:12px; cursor:pointer;">
+                    ✨ Mark Ready / Served
+                  </button>
+                  <button onclick="openRejectModal(${o.id})" style="background:var(--color-danger-bg); color:var(--color-danger); border:1px solid var(--color-danger); padding:6px 10px; border-radius:var(--radius-full); font-size:11px; cursor:pointer; font-weight: 700;">
+                    Cancel
+                  </button>
+                ` : `
+                  <button onclick="updateOrderStatusDirect(${o.id}, 'Pending')" style="background:var(--bg-cream); color:var(--color-olive); border:1px solid var(--border-subtle); padding:6px 12px; border-radius:var(--radius-full); font-weight:bold; font-size:12px; cursor:pointer;">
+                    🔄 Reopen
+                  </button>
+                `}
+                ${o.paymentStatus === 'Verified & Received' ? `
+                  <button onclick="openAdminBillModal(${o.id})" style="background:var(--bg-cream-alt); color:var(--color-olive); border:1.5px solid var(--color-olive); padding:5px 10px; border-radius:var(--radius-full); font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="View, Print or Send Official Bill">
+                    🧾 Send Bill
+                  </button>
+                ` : `
+                  <button onclick="openAdminBillModal(${o.id})" style="background:#FFF3E0; color:#E65100; border:1px solid #FFE0B2; padding:5px 10px; border-radius:var(--radius-full); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Payment Pending: Verify payment to unlock bill">
+                    🔒 Bill (Unpaid)
+                  </button>
+                `}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Modal Handlers
+    function openAcceptModal(id) {
+      activeActionOrderId = id;
+      const order = cachedOrders.find(o => o.id === id);
+      const custName = order ? order.customer : 'Customer';
+      document.getElementById('acceptOrderSubtext').textContent = `Set estimated cooking time for Order #${id} (${custName}):`;
+      document.getElementById('customCookingMinutes').value = 15;
+      document.getElementById('acceptOrderModal').style.display = 'flex';
+    }
+
+    function closeAcceptModal() {
+      document.getElementById('acceptOrderModal').style.display = 'none';
+      activeActionOrderId = null;
+    }
+
+    function selectTimePreset(mins, btn) {
+      document.getElementById('customCookingMinutes').value = mins;
+      document.querySelectorAll('.time-preset-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+
+    async function submitAcceptOrder() {
+      const minutes = parseInt(document.getElementById('customCookingMinutes').value, 10) || 15;
+      try {
+        const res = await fetch(`${API}/orders/${activeActionOrderId}/accept`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cookingTime: minutes })
+        });
+        if (res.ok) {
+          showToast(`Order #${activeActionOrderId} accepted! (${minutes} mins cooking time)`);
+          closeAcceptModal();
+          loadOrders();
+        } else {
+          showToast('Failed to accept order', true);
+        }
+      } catch (err) {
+        showToast('Connection error', true);
+      }
+    }
+
+    function openRejectModal(id) {
+      activeActionOrderId = id;
+      const order = cachedOrders.find(o => o.id === id);
+      const custName = order ? order.customer : 'Customer';
+      document.getElementById('rejectOrderSubtext').textContent = `Select reason for rejecting Order #${id} (${custName}):`;
+      document.getElementById('rejectOrderModal').style.display = 'flex';
+    }
+
+    function closeRejectModal() {
+      document.getElementById('rejectOrderModal').style.display = 'none';
+      activeActionOrderId = null;
+    }
+
+    async function submitRejectOrder() {
+      const reason = 'No available stocks for now';
+      try {
+        const res = await fetch(`${API}/orders/${activeActionOrderId}/reject`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason })
+        });
+        if (res.ok) {
+          showToast(`Order #${activeActionOrderId} marked as Out of Stock / Rejected`);
+          closeRejectModal();
+          loadOrders();
+        } else {
+          showToast('Failed to reject order', true);
+        }
+      } catch (err) {
+        showToast('Connection error', true);
+      }
+    }
+
+    async function updateOrderStatusDirect(id, status) {
+      try {
+        const res = await fetch(`${API}/orders/${id}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        if (res.ok) {
+          showToast(`Order #${id} marked as ${status}`);
+          loadOrders();
+        }
+      } catch (_) {}
+    }
+
+    async function verifyPayment(id) {
+      try {
+        const res = await fetch(`${API}/orders/${id}/verify-payment`, { method: 'PATCH' });
+        if (res.ok) {
+          showToast(`Payment for Order #${id} Verified!`);
+          loadOrders();
+        }
+      } catch (_) {}
+    }
+
+    // Admin Bill & Invoice Logic
+    let activeBillOrder = null;
+
+    function openAdminBillModal(id) {
+      const order = cachedOrders.find(o => o.id === id);
+      if (!order) return;
+      activeBillOrder = order;
+
+      const orderCode = order.orderCode || order.order_code || `ORD-${order.id}`;
+      const isFirst = !!(order.isFirstOrder || order.is_first_order);
+      const billPref = order.billPreference || order.bill_preference || 'Soft Copy';
+      const customer = order.customer || 'Valued Customer';
+      const items = Array.isArray(order.items) ? order.items : [order.items || ''];
+      const subtotal = order.food_subtotal || order.foodSubtotal || order.total || 0;
+      const deliveryFee = order.delivery_fee || order.deliveryFee || 0;
+      const distanceKm = order.distance_km || 0;
+      const total = order.total || order.total_price || 0;
+      const dateStr = order.time || new Date().toLocaleString();
+      const isPaid = order.paymentStatus === 'Verified & Received';
+
+      const container = document.getElementById('adminPrintableBill');
+      container.innerHTML = `
+        ${!isPaid ? `
+          <div style="background:#FFF3E0; border:1.5px solid #FFB74D; border-radius:6px; padding:12px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <div style="font-weight:800; color:#E65100; font-size:13px;">🔒 Official Bill Locked: Payment Confirmation Required</div>
+              <div style="font-size:11.5px; color:#6D4C41; margin-top:2px;">Bill copy can only be given or dispatched once customer payment is confirmed/received.</div>
+            </div>
+            <button onclick="verifyPaymentAndUnlockBill(${order.id})" style="background:var(--color-success); color:#FFFFFF; border:none; padding:7px 14px; border-radius:var(--radius-full); font-weight:800; font-size:12px; cursor:pointer; box-shadow:var(--shadow-sm);">
+              ✓ Verify Payment & Unlock
+            </button>
+          </div>
+        ` : `
+          <div style="background:#E8F5E9; border:1.5px solid #81C784; border-radius:6px; padding:8px 12px; margin-bottom:14px; font-size:12px; font-weight:700; color:#2E7D32; display:flex; align-items:center; gap:6px;">
+            <span>✅</span> Payment Confirmed & Received — Official Bill Copy Unlocked
+          </div>
+        `}
+
+        <div style="text-align: center; border-bottom: 2px dashed #A89F8D; padding-bottom: 12px; margin-bottom: 14px;">
+          <h2 style="font-family: var(--font-heading); color: var(--color-olive); margin: 0; font-size: 24px;">gr8food portal</h2>
+          <div style="font-size: 12px; color: #555; margin-top: 2px; font-weight: 600;">Artisan Cuisine & Doorstep Delivery</div>
+          <div style="font-size: 11.5px; color: #666; margin-top: 3px;">📍 Brigade Road, Central Bangalore | 📞 +91 80733 49233</div>
+          <div style="font-size: 11px; color: #777; margin-top: 2px;">GSTIN: 29AABCU9603R1ZM • FSSAI Lic: 11223344000123</div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 12px; line-height: 1.5;">
+          <div>
+            <strong>Invoice / Order No:</strong> <span style="color:var(--color-olive); font-weight:800;">#${escapeHtml(orderCode)}</span><br>
+            <strong>Date & Time:</strong> ${escapeHtml(dateStr)}<br>
+            <strong>Customer Type:</strong> ${isFirst ? '<span style="color:#2E7D32; font-weight:800;">🌟 New Customer (1st Order)</span>' : 'Registered Customer'}<br>
+            <strong>Bill Preference:</strong> <span style="font-weight:700; color:var(--color-olive);">${escapeHtml(billPref)}</span>
+          </div>
+          <div style="text-align: right;">
+            <strong>Customer:</strong> ${escapeHtml(customer)}<br>
+            <strong>Order Mode:</strong> ${escapeHtml(order.dineOption || 'Dine-In')}<br>
+            <strong>Payment Mode:</strong> ${escapeHtml(order.paymentMode || 'Online')}<br>
+            <strong>Payment Status:</strong> <span style="font-weight:700; color:${isPaid ? 'var(--color-success)' : 'var(--color-warning)'};">${escapeHtml(order.paymentStatus || 'Awaiting Payment')}</span>
+          </div>
+        </div>
+
+        ${order.dineOption === 'Delivery to Home' ? `
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 4px; padding: 8px 10px; font-size: 11.5px; margin-bottom: 12px; line-height: 1.45;">
+            📍 <strong>Delivery Address:</strong> ${escapeHtml(order.deliveryAddress || 'N/A')}<br>
+            📞 <strong>Contact:</strong> ${escapeHtml(order.deliveryPhone || 'N/A')} | 🛵 <strong>Map Distance:</strong> ${distanceKm} km (Fee: ₹${deliveryFee})
+            ${order.deliveryNotes ? `<br>📝 <em>Note: ${escapeHtml(order.deliveryNotes)}</em>` : ''}
+          </div>
+        ` : ''}
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 12px;">
+          <thead>
+            <tr style="border-bottom: 1px solid #A89F8D; background: #F7F5F0;">
+              <th style="padding: 6px 8px; text-align: left;">Dishes Ordered</th>
+              <th style="padding: 6px 8px; text-align: right;">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(item => `
+              <tr style="border-bottom: 1px solid #EEE;">
+                <td style="padding: 6px 8px; font-weight: 600;">${escapeHtml(item)}</td>
+                <td style="padding: 6px 8px; text-align: right;">1</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div style="border-top: 1px solid #A89F8D; padding-top: 8px; font-size: 12.5px; line-height: 1.6;">
+          <div style="display: flex; justify-content: space-between;">
+            <span>Dishes Subtotal:</span>
+            <strong>₹${subtotal}</strong>
+          </div>
+          ${deliveryFee > 0 ? `
+            <div style="display: flex; justify-content: space-between;">
+              <span>Doorstep Delivery Charge (${distanceKm} km):</span>
+              <strong>₹${deliveryFee}</strong>
+            </div>
+          ` : ''}
+          <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; color: var(--color-olive); border-top: 2px dashed #A89F8D; padding-top: 6px; margin-top: 6px;">
+            <span>Grand Total:</span>
+            <span>₹${total}</span>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 14px; border-top: 1px solid #EEE; padding-top: 10px; font-size: 11px; color: #666;">
+          Thank you for dining with gr8food portal! • Made with care, served with love.
+        </div>
+      `;
+
+      const printBtn = document.getElementById('adminBtnPrintBill');
+      const dlBtn = document.getElementById('adminBtnDownloadSoftCopy');
+      const waBtn = document.getElementById('adminBtnWaSoftCopy');
+      const emailBtn = document.getElementById('adminBtnEmailSoftCopy');
+
+      if (printBtn) {
+        printBtn.disabled = !isPaid;
+        printBtn.style.cursor = isPaid ? 'pointer' : 'not-allowed';
+      }
+      if (dlBtn) {
+        dlBtn.disabled = !isPaid;
+        dlBtn.style.cursor = isPaid ? 'pointer' : 'not-allowed';
+      }
+      if (waBtn) {
+        waBtn.disabled = !isPaid;
+        waBtn.style.cursor = isPaid ? 'pointer' : 'not-allowed';
+      }
+      if (emailBtn) {
+        emailBtn.disabled = !isPaid;
+        emailBtn.style.cursor = isPaid ? 'pointer' : 'not-allowed';
+      }
+
+      const btnsWrap = document.getElementById('adminBillActionBtns');
+      if (btnsWrap) {
+        btnsWrap.style.opacity = isPaid ? '1' : '0.5';
+      }
+
+      document.getElementById('adminBillModal').style.display = 'flex';
+    }
+
+    async function verifyPaymentAndUnlockBill(id) {
+      await verifyPayment(id);
+      openAdminBillModal(id);
+    }
+
+    function closeAdminBillModal() {
+      document.getElementById('adminBillModal').style.display = 'none';
+      activeBillOrder = null;
+    }
+
+    function printAdminBill() {
+      if (!activeBillOrder || activeBillOrder.paymentStatus !== 'Verified & Received') {
+        showToast('Payment must be confirmed before printing bill', true);
+        return;
+      }
+      window.print();
+    }
+
+    function downloadAdminSoftCopy() {
+      if (!activeBillOrder || activeBillOrder.paymentStatus !== 'Verified & Received') {
+        showToast('Payment must be confirmed before downloading bill', true);
+        return;
+      }
+      const billEl = document.getElementById('adminPrintableBill');
+      const orderCode = activeBillOrder.orderCode || activeBillOrder.order_code || `ORD-${activeBillOrder.id}`;
+      
+      const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>gr8food Invoice - ${orderCode}</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #FFF8ED; color: #343A32; padding: 24px; display: flex; justify-content: center; }
+    .invoice-card { background: #FFFFFF; border: 1px solid #A89F8D; border-radius: 8px; padding: 24px; max-width: 480px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    table { width: 100%; border-collapse: collapse; }
+  </style>
+</head>
+<body>
+  <div class="invoice-card">
+    ${billEl.innerHTML}
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gr8food_bill_${orderCode}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Soft copy bill downloaded for ${orderCode}!`);
+    }
+
+    function sendSoftCopyWhatsApp() {
+      if (!activeBillOrder || activeBillOrder.paymentStatus !== 'Verified & Received') {
+        showToast('Payment must be confirmed before sending bill', true);
+        return;
+      }
+      const orderCode = activeBillOrder.orderCode || activeBillOrder.order_code || `ORD-${activeBillOrder.id}`;
+      const phone = (activeBillOrder.deliveryPhone || activeBillOrder.delivery_phone || '').replace(/[^0-9]/g, '');
+      const customer = activeBillOrder.customer || 'Valued Customer';
+      const items = Array.isArray(activeBillOrder.items) ? activeBillOrder.items.join(', ') : activeBillOrder.items;
+      const total = activeBillOrder.total || activeBillOrder.total_price || 0;
+
+      const msg = encodeURIComponent(`🧾 *gr8food portal - Official Paid Bill Receipt*\n\n` +
+        `Hello *${customer}*,\nThank you for ordering with gr8food portal!\n\n` +
+        `*Order No:* #${orderCode}\n` +
+        `*Payment Status:* ✅ Paid & Confirmed\n` +
+        `*Items:* ${items}\n` +
+        `*Grand Total:* ₹${total}\n` +
+        `*Order Type:* ${activeBillOrder.dineOption || 'Dine-In'}\n` +
+        `*Payment Mode:* ${activeBillOrder.paymentMode || 'Online'}\n\n` +
+        `_Made with care, served with love!_ 🍽️\n` +
+        `📍 Brigade Road, Central Bangalore | 📞 +91 80733 49233`);
+
+      const url = phone.length >= 10 ? `https://wa.me/${phone.startsWith('91') ? phone : '91' + phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
+      window.open(url, '_blank');
+      showToast('Opening WhatsApp with bill copy...');
+    }
+
+    function sendSoftCopyEmail() {
+      if (!activeBillOrder || activeBillOrder.paymentStatus !== 'Verified & Received') {
+        showToast('Payment must be confirmed before sending bill', true);
+        return;
+      }
+      const orderCode = activeBillOrder.orderCode || activeBillOrder.order_code || `ORD-${activeBillOrder.id}`;
+      const customer = activeBillOrder.customer || 'Customer';
+      const items = Array.isArray(activeBillOrder.items) ? activeBillOrder.items.join(', ') : activeBillOrder.items;
+      const total = activeBillOrder.total || activeBillOrder.total_price || 0;
+
+      const subject = encodeURIComponent(`gr8food portal - Official Paid Bill for Order #${orderCode}`);
+      const body = encodeURIComponent(`Dear ${customer},\n\n` +
+        `Your payment has been received and verified successfully. Here is your official bill copy.\n\n` +
+        `=== OFFICIAL PAID INVOICE ===\n` +
+        `Order / Invoice No: #${orderCode}\n` +
+        `Payment Status: Paid & Confirmed\n` +
+        `Dishes Ordered: ${items}\n` +
+        `Total Amount: ₹${total}\n` +
+        `Order Type: ${activeBillOrder.dineOption || 'Dine-In'}\n\n` +
+        `Warm regards,\ngr8food portal Kitchen & Doorstep Delivery Team\n` +
+        `📍 Brigade Road, Central Bangalore | 📞 +91 80733 49233`);
+
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      showToast('Opening email client with bill copy...');
+    }
+
+    // 2. MENU & STOCKS
+    async function loadAdminMenu() {
+      try {
+        const res = await fetch(`${API}/menu`);
+        cachedMenu = await res.json();
+        const tbody = document.getElementById('menuTableBody');
+
+        tbody.innerHTML = cachedMenu.map(d => {
+          const isAvail = d.is_available !== false;
+          const img = d.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80';
+          return `
+            <tr>
+              <td><img src="${escapeHtml(img)}" style="width:48px; height:48px; border-radius:6px; object-fit:cover; border:1px solid var(--border-subtle);" /></td>
+              <td><strong>${escapeHtml(d.name)}</strong></td>
+              <td><span style="font-size:12px; background:var(--bg-cream-alt); padding:3px 8px; border-radius:var(--radius-full);">${escapeHtml(d.category || 'Main Course')}</span></td>
+              <td><strong>₹${d.price}</strong></td>
+              <td style="font-size:12px; color:var(--text-muted); max-width:200px;">${escapeHtml(d.desc || d.description || '')}</td>
+              <td>
+                <button onclick="toggleDishStock(${d.id})" style="background:${isAvail ? 'var(--color-success-bg)' : 'var(--color-danger-bg)'}; color:${isAvail ? 'var(--color-success)' : 'var(--color-danger)'}; border:1px solid ${isAvail ? 'var(--color-success)' : 'var(--color-danger)'}; padding:4px 10px; border-radius:var(--radius-full); font-size:11px; font-weight:800; cursor:pointer;">
+                  ${isAvail ? '● In Stock' : '✕ Out of Stock'}
+                </button>
+              </td>
+              <td>
+                <button onclick="editDish(${d.id})" style="background:var(--color-olive); color:#fff; border:none; padding:4px 10px; border-radius:var(--radius-full); font-size:11px; font-weight:bold; cursor:pointer;">Edit</button>
+                <button onclick="deleteDish(${d.id})" style="background:transparent; color:var(--color-danger); border:1px solid var(--color-danger); padding:4px 8px; border-radius:var(--radius-full); font-size:11px; cursor:pointer; margin-left:4px;">Delete</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (_) {}
+    }
+
+    function handleDishFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        document.getElementById('dishImageUrlInput').value = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function handleDishSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('editDishId').value;
+      const name = document.getElementById('dishNameInput').value.trim();
+      const price = parseFloat(document.getElementById('dishPriceInput').value);
+      const category = document.getElementById('dishCategoryInput').value;
+      const desc = document.getElementById('dishDescInput').value.trim();
+      const image_url = document.getElementById('dishImageUrlInput').value.trim();
+
+      const payload = { name, price, category, desc, image_url };
+
+      try {
+        const url = id ? `${API}/menu/${id}` : `${API}/menu`;
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          showToast(id ? 'Dish updated successfully!' : 'Dish added to menu!');
+          resetDishForm();
+          loadAdminMenu();
+        } else {
+          showToast('Failed to save dish', true);
+        }
+      } catch (_) {
+        showToast('Connection error', true);
+      }
+    }
+
+    function editDish(id) {
+      const dish = cachedMenu.find(d => d.id === id);
+      if (!dish) return;
+      document.getElementById('editDishId').value = dish.id;
+      document.getElementById('dishNameInput').value = dish.name;
+      document.getElementById('dishPriceInput').value = dish.price;
+      document.getElementById('dishCategoryInput').value = dish.category || 'Biryani & Rice';
+      document.getElementById('dishDescInput').value = dish.desc || dish.description || '';
+      document.getElementById('dishImageUrlInput').value = dish.image_url || '';
+      document.getElementById('dishFormHeading').textContent = `Edit Dish: ${dish.name}`;
+      document.getElementById('btnSaveDish').textContent = 'Update Dish';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetDishForm() {
+      document.getElementById('editDishId').value = '';
+      document.getElementById('menuDishForm').reset();
+      document.getElementById('dishFormHeading').textContent = 'Add New Dish to gr8food Menu';
+      document.getElementById('btnSaveDish').textContent = 'Add Dish to Menu';
+    }
+
+    async function toggleDishStock(id) {
+      try {
+        const res = await fetch(`${API}/menu/${id}/toggle-stock`, { method: 'PATCH' });
+        if (res.ok) {
+          showToast('Stock availability toggled!');
+          loadAdminMenu();
+        }
+      } catch (_) {}
+    }
+
+    async function deleteDish(id) {
+      if (!confirm('Are you sure you want to delete this dish from the menu?')) return;
+      try {
+        const res = await fetch(`${API}/menu/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('Dish deleted successfully');
+          loadAdminMenu();
+        }
+      } catch (_) {}
+    }
+
+    // 3. SALES REPORT
+    async function loadSalesReport() {
+      try {
+        const res = await fetch(`${API}/sales`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        document.getElementById('statTotalRev').textContent = `₹${data.totalRevenue}`;
+        document.getElementById('statOnlineRev').textContent = `₹${data.onlineRevenue}`;
+        document.getElementById('statCashRev').textContent = `₹${data.offlineRevenue}`;
+        document.getElementById('statOrderCount').textContent = data.totalSalesCount;
+
+        const tbody = document.getElementById('salesTableBody');
+        tbody.innerHTML = (data.orders || []).map(o => `
+          <tr>
+            <td><strong>#${o.id}</strong></td>
+            <td>${escapeHtml(o.customer)}</td>
+            <td><span style="font-size:11px; background:var(--bg-cream-alt); padding:2px 8px; border-radius:var(--radius-full);">${escapeHtml(o.dineOption || 'Dine-In')}</span></td>
+            <td>${Array.isArray(o.items) ? o.items.map(escapeHtml).join(', ') : escapeHtml(o.items)}</td>
+            <td>${escapeHtml(o.paymentMode || 'Cash')}</td>
+            <td><strong style="color:var(--color-olive);">₹${o.total}</strong></td>
+            <td style="font-size:12px; color:var(--text-muted);">${o.time}</td>
+          </tr>
+        `).join('');
+      } catch (_) {}
+    }
+
+    // 4. COMBOS
+    async function loadAdminCombos() {
+      try {
+        const res = await fetch(`${API}/combos`);
+        const combos = await res.json();
+        const tbody = document.getElementById('cateringTableBody');
+        tbody.innerHTML = combos.map(c => `
+          <tr>
+            <td style="font-size:22px;">${escapeHtml(c.icon || '🍗')}</td>
+            <td><strong>${escapeHtml(c.title)}</strong></td>
+            <td>${escapeHtml(c.description)}</td>
+            <td><span style="background:var(--bg-cream-alt); padding:3px 8px; border-radius:var(--radius-full); font-size:11px;">${escapeHtml(c.badge)}</span></td>
+            <td><button onclick="deleteCombo(${c.id})" style="background:transparent; border:1px solid var(--color-danger); color:var(--color-danger); padding:4px 10px; border-radius:var(--radius-full); font-size:11px; cursor:pointer;">Delete</button></td>
+          </tr>
+        `).join('');
+      } catch (_) {}
+    }
+
+    async function addCateringCombo(e) {
+      e.preventDefault();
+      const icon = document.getElementById('comboIcon').value.trim();
+      const title = document.getElementById('comboTitle').value.trim();
+      const description = document.getElementById('comboDesc').value.trim();
+      const badge = document.getElementById('comboBadge').value.trim();
+
+      try {
+        const res = await fetch(`${API}/combos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ icon, title, description, badge })
+        });
+        if (res.ok) {
+          showToast('Party Feast added!');
+          document.getElementById('comboTitle').value = '';
+          document.getElementById('comboDesc').value = '';
+          loadAdminCombos();
+        }
+      } catch (_) {}
+    }
+
+    async function deleteCombo(id) {
+      try {
+        const res = await fetch(`${API}/combos/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('Combo removed');
+          loadAdminCombos();
+        }
+      } catch (_) {}
+    }
+
+    // 5. PROMO BANNER
+    async function loadOffer() {
+      try {
+        const res = await fetch(`${API}/offer`);
+        const data = await res.json();
+        document.getElementById('offerInput').value = data.offer || '';
+      } catch (_) {}
+    }
+
+    async function updateOffer(e) {
+      e.preventDefault();
+      const offer = document.getElementById('offerInput').value.trim();
+      try {
+        const res = await fetch(`${API}/offer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ offer })
+        });
+        if (res.ok) showToast('Live banner broadcasted!');
+      } catch (_) {}
+    }
+
+    // 6. REVIEWS
+    async function loadReviews() {
+      try {
+        const res = await fetch(`${API}/reviews`);
+        const reviews = await res.json();
+        const tbody = document.getElementById('reviewsTableBody');
+        tbody.innerHTML = reviews.map(r => `
+          <tr>
+            <td><strong>${escapeHtml(r.customer_name)}</strong></td>
+            <td>“${escapeHtml(r.review)}”</td>
+            <td style="font-size:12px; color:var(--text-muted);">${r.date || ''}</td>
+            <td style="color:var(--color-olive); font-weight:600;">${r.admin_reply ? `👨‍🍳 <strong>Reply:</strong> ${escapeHtml(r.admin_reply)}` : '<em style="color:var(--text-muted);">Awaiting reply</em>'}</td>
+            <td>
+              <button onclick="openReplyModal(${r.id})" style="background:var(--color-olive); color:#fff; border:none; padding:5px 12px; border-radius:var(--radius-full); font-weight:bold; font-size:11px; cursor:pointer;">Reply</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (_) {}
+    }
+
+    function openReplyModal(id) {
+      activeReplyReviewId = id;
+      document.getElementById('replyModalInput').value = '';
+      document.getElementById('replyModal').style.display = 'flex';
+    }
+
+    function closeReplyModal() {
+      document.getElementById('replyModal').style.display = 'none';
+      activeReplyReviewId = null;
+    }
+
+    async function submitAdminReply() {
+      const reply = document.getElementById('replyModalInput').value.trim();
+      if (!reply) return showToast('Please enter a reply message', true);
+
+      try {
+        const res = await fetch(`${API}/reviews/${activeReplyReviewId}/reply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reply })
+        });
+        if (res.ok) {
+          closeReplyModal();
+          showToast('Reply published successfully!');
+          loadReviews();
+        }
+      } catch (_) {}
+    }
+
+    // 7. CD VAULT
+    function openCDLockModal() {
+      document.getElementById('reversePassInput').value = '';
+      document.getElementById('cdLockModal').style.display = 'flex';
+      setTimeout(() => document.getElementById('reversePassInput').focus(), 100);
+    }
+
+    function closeCDModal() {
+      document.getElementById('cdLockModal').style.display = 'none';
+    }
+
+    async function verifyCDAccess() {
+      const reversePassword = document.getElementById('reversePassInput').value.trim();
+      if (!reversePassword) return showToast('Please enter authorization key', true);
+
+      try {
+        const res = await fetch(`${API}/admin/cd-access`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminUsername: currentAdmin.username, reversePassword })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          isCDUnlocked = true;
+          cdCustomersData = data.customers || [];
+          closeCDModal();
+          showToast('🔓 CD Vault Unlocked Successfully!');
+
+          document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+          document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+          document.getElementById('tab-cd').classList.add('active');
+          document.getElementById('sectionTitle').textContent = 'Customer Directory (CD Vault)';
+          document.getElementById('cdSearchInput').style.display = 'block';
+
+          renderCDData(cdCustomersData);
+        } else {
+          showToast(data.error || 'Access Denied', true);
+        }
+      } catch (_) {
+        showToast('CD verification error', true);
+      }
+    }
+
+    function renderCDData(customers) {
+      const tbody = document.getElementById('cdTableBody');
+      if (!customers || customers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">No customers found.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = customers.map(c => `
+        <tr>
+          <td><strong>👤 ${escapeHtml(c.full_name)}</strong></td>
+          <td style="color:var(--color-olive); font-weight:700;">📞 ${escapeHtml(c.phone || 'N/A')}</td>
+          <td style="color:var(--text-muted);">${escapeHtml(c.email || 'N/A')}</td>
+          <td style="font-size:12px; color:var(--text-dark);">${escapeHtml(c.address || 'Not Provided')}</td>
+          <td>@${escapeHtml(c.username)}</td>
+          <td style="font-size:12px; color:var(--text-muted);">${c.joined_date}</td>
+        </tr>
+      `).join('');
+    }
+
+    function filterCDData() {
+      const q = (document.getElementById('cdSearchInput').value || '').toLowerCase().trim();
+      const filtered = cdCustomersData.filter(c => 
+        (c.full_name || '').toLowerCase().includes(q) ||
+        (c.phone || '').toLowerCase().includes(q) ||
+        (c.email || '').toLowerCase().includes(q) ||
+        (c.username || '').toLowerCase().includes(q)
+      );
+      renderCDData(filtered);
+    }
+
+    function lockCD() {
+      isCDUnlocked = false;
+      cdCustomersData = [];
+      document.getElementById('cdSearchInput').style.display = 'none';
+      document.getElementById('cdTableBody').innerHTML = `
+        <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+          🔒 Directory is locked. Authentication required to inspect records.
+        </td></tr>
+      `;
+      showToast('🔒 Directory Locked');
+      switchTab('orders', document.querySelector('.nav-links .nav-btn'));
+    }
+
+    // 8. KITCHEN LOCATION SETTINGS & ADMIN PROFILE
+    async function loadKitchenSettings() {
+      try {
+        const res = await fetch(`${API}/settings`);
+        if (res.ok) {
+          const s = await res.json();
+          document.getElementById('adminRestaurantAddress').value = s.restaurantAddress || '';
+          document.getElementById('adminRestaurantPhone').value = s.restaurantPhone || '';
+          document.getElementById('adminDeliveryRate').value = s.deliveryRatePerKm || 9;
+          document.getElementById('adminMinDeliveryFee').value = s.minDeliveryFee || 18;
+        }
+      } catch (_) {}
+    }
+
+    async function saveKitchenSettings(e) {
+      e.preventDefault();
+      const restaurantAddress = document.getElementById('adminRestaurantAddress').value.trim();
+      const restaurantPhone = document.getElementById('adminRestaurantPhone').value.trim();
+      const deliveryRatePerKm = parseFloat(document.getElementById('adminDeliveryRate').value);
+      const minDeliveryFee = parseFloat(document.getElementById('adminMinDeliveryFee').value);
+
+      try {
+        const res = await fetch(`${API}/settings`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ restaurantAddress, restaurantPhone, deliveryRatePerKm, minDeliveryFee })
+        });
+        if (res.ok) {
+          showToast('✅ Kitchen Location & Delivery Settings Saved!');
+        } else {
+          showToast('Failed to save settings', true);
+        }
+      } catch (_) {
+        showToast('Connection error', true);
+      }
+    }
+
+    async function loadAdminProfile() {
+      try {
+        const res = await fetch(`${API}/admin/profile/${encodeURIComponent(currentAdmin.username)}`);
+        if (res.ok) {
+          const data = await res.json();
+          currentAdmin = data;
+          localStorage.setItem('gr8food_user', JSON.stringify(data));
+        }
+      } catch (_) {}
+
+      document.getElementById('adminFullName').value = currentAdmin.full_name || '';
+      document.getElementById('adminUsername').value = currentAdmin.username || '';
+      document.getElementById('adminAvatarUrl').value = currentAdmin.avatar || '';
+      document.getElementById('adminProfileImgPreview').src = currentAdmin.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin';
+      document.getElementById('adminCurrentPassword').value = '';
+      document.getElementById('adminNewPassword').value = '';
+      updateHeaderUI();
+    }
+
+    function handleAdminAvatarUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        document.getElementById('adminAvatarUrl').value = evt.target.result;
+        document.getElementById('adminProfileImgPreview').src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function saveAdminProfile(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('adminFullName').value.trim();
+      const newUsername = document.getElementById('adminUsername').value.trim();
+      const avatar = document.getElementById('adminAvatarUrl').value.trim();
+      const currentPassword = document.getElementById('adminCurrentPassword').value.trim();
+      const newPassword = document.getElementById('adminNewPassword').value.trim();
+
+      if (newPassword && !currentPassword) {
+        return showToast('Please enter your Current Password', true);
+      }
+
+      try {
+        const res = await fetch(`${API}/admin/profile`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            currentUsername: currentAdmin.username,
+            newUsername,
+            fullName,
+            avatar,
+            currentPassword,
+            newPassword
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to update admin profile');
+
+        currentAdmin.username = newUsername;
+        currentAdmin.full_name = fullName;
+        currentAdmin.avatar = avatar;
+        localStorage.setItem('gr8food_user', JSON.stringify(currentAdmin));
+
+        updateHeaderUI();
+        document.getElementById('adminCurrentPassword').value = '';
+        document.getElementById('adminNewPassword').value = '';
+        showToast('Admin Profile updated successfully!');
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // ── 9. SECURITY MONITOR & REAL-TIME SIREN ALARM ─────────────────────────
+    let lockdownCurrentlyActive = false;
+    let alarmAudioCtx = null;
+    let isAlarmSoundEnabled = true;
+    let isAlarmRinging = false;
+    let alarmIntervalId = null;
+    let lastKnownAlertId = null;
+
+    // Web Audio API Dual-Tone Warning Siren (No external audio file dependencies)
+    function playSirenPulse() {
+      if (!isAlarmSoundEnabled) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!alarmAudioCtx) alarmAudioCtx = new AudioContext();
+        if (alarmAudioCtx.state === 'suspended') alarmAudioCtx.resume();
+
+        const osc = alarmAudioCtx.createOscillator();
+        const gain = alarmAudioCtx.createGain();
+        
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(880, alarmAudioCtx.currentTime); // 880Hz High
+        osc.frequency.exponentialRampToValueAtTime(587.33, alarmAudioCtx.currentTime + 0.35); // 587Hz Low
+        
+        gain.gain.setValueAtTime(0.35, alarmAudioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, alarmAudioCtx.currentTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(alarmAudioCtx.destination);
+
+        osc.start();
+        osc.stop(alarmAudioCtx.currentTime + 0.36);
+      } catch (_) {}
+    }
+
+    function triggerAudibleAlarm(alertDetails) {
+      if (isAlarmRinging) return;
+      isAlarmRinging = true;
+
+      // Show top emergency alert banner
+      const banner = document.getElementById('globalEmergencyAlertBanner');
+      if (banner) {
+        banner.style.display = 'flex';
+        document.getElementById('emergencyAlertText').textContent = 
+          `🚨 ATTACK DETECTED: ${alertDetails.type || 'Intrusion'} on ${alertDetails.page || 'Portal'} (IP: ${alertDetails.ip || 'Unknown'}) at ${alertDetails.timestamp || 'Now'}`;
+      }
+
+      // Play alert siren pulses
+      let count = 0;
+      playSirenPulse();
+      alarmIntervalId = setInterval(() => {
+        count++;
+        playSirenPulse();
+        if (count >= 8) {
+          stopAudibleAlarm();
+        }
+      }, 500);
+
+      // Native Desktop Notification if granted
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification('🚨 gr8food Security Alert', {
+            body: `${alertDetails.type || 'Intrusion'} on ${alertDetails.page || 'Portal'} (IP: ${alertDetails.ip || 'Unknown'})`,
+            icon: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Security'
+          });
+        } catch (_) {}
+      }
+    }
+
+    function stopAudibleAlarm() {
+      isAlarmRinging = false;
+      if (alarmIntervalId) {
+        clearInterval(alarmIntervalId);
+        alarmIntervalId = null;
+      }
+    }
+
+    function dismissEmergencyBanner() {
+      stopAudibleAlarm();
+      const banner = document.getElementById('globalEmergencyAlertBanner');
+      if (banner) banner.style.display = 'none';
+    }
+
+    function toggleAlarmSound() {
+      isAlarmSoundEnabled = !isAlarmSoundEnabled;
+      const btn = document.getElementById('btnToggleAlarmSound');
+      if (btn) {
+        btn.innerHTML = isAlarmSoundEnabled ? '🔊 Alarm Siren: Active' : '🔇 Alarm Siren: Muted';
+        btn.style.background = isAlarmSoundEnabled ? 'var(--color-olive)' : 'var(--color-khaki-dark)';
+      }
+      showToast(isAlarmSoundEnabled ? '🔊 Security alarm siren active' : '🔇 Security alarm muted');
+    }
+
+    function testAlarmSiren() {
+      if (!alarmAudioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        alarmAudioCtx = new AudioContext();
+      }
+      triggerAudibleAlarm({
+        type: 'SYSTEM_ALARM_TEST',
+        page: 'admin.html',
+        ip: '127.0.0.1',
+        timestamp: new Date().toLocaleTimeString()
+      });
+      showToast('🔔 Playing test alarm tone...');
+    }
+
+    async function loadSecurityAlerts() {
+      const list = document.getElementById('securityAlertsList');
+      try {
+        const res = await fetch(`${API}/security/alerts`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        lockdownCurrentlyActive = !!data.lockdownActive;
+        updateLockdownUI();
+        const alerts = data.alerts || [];
+
+        // Check for new incoming alerts to sound the alarm
+        if (alerts.length > 0) {
+          const newest = alerts[0];
+          if (lastKnownAlertId === null) {
+            lastKnownAlertId = newest.id;
+          } else if (newest.id !== lastKnownAlertId) {
+            lastKnownAlertId = newest.id;
+            triggerAudibleAlarm(newest);
+          }
+        }
+
+        if (alerts.length === 0) {
+          list.innerHTML = '<p style="text-align:center;padding:40px 0;color:var(--text-muted);">✅ No security alerts. System is clean and protected.</p>';
+          return;
+        }
+
+        list.innerHTML = alerts.map(a => `
+          <div style="background:#FFF8ED; border:1px solid rgba(155,34,38,0.2); border-left:4px solid #9B2226; border-radius:10px; padding:14px 16px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+            <div style="min-width:0;">
+              <div style="font-weight:700; font-size:13.5px; color:#9B2226; margin-bottom:4px;">⚠️ ${escapeHtml(a.type)}</div>
+              <div style="font-size:12.5px; color:var(--text-dark); margin-bottom:4px;"><strong>Target:</strong> ${escapeHtml(a.page)}</div>
+              <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:4px;"><strong>Origin IP:</strong> ${escapeHtml(String(a.ip))} &nbsp;|&nbsp; <strong>Time:</strong> ${escapeHtml(a.timestamp)}</div>
+              ${a.detail ? `<div style="font-size:12px; color:var(--text-muted); word-break:break-word; background:rgba(0,0,0,0.03); padding:6px 10px; border-radius:6px; margin-top:4px;">${escapeHtml(a.detail)}</div>` : ''}
+            </div>
+            <button onclick="dismissAlert(${Number(a.id)})" style="flex-shrink:0; background:none; border:1px solid var(--border-subtle); border-radius:6px; padding:4px 10px; font-size:12px; cursor:pointer; white-space:nowrap;">Dismiss</button>
+          </div>
+        `).join('');
+      } catch (_) {
+        if (list) list.innerHTML = '<p style="color:var(--color-danger, #9B2226);text-align:center;padding:30px;">Failed to load alerts.</p>';
+      }
+    }
+
+    function updateLockdownUI() {
+      const btn    = document.getElementById('btnToggleLockdown');
+      const banner = document.getElementById('lockdownStatusBanner');
+      if (lockdownCurrentlyActive) {
+        if (btn)    { btn.textContent = '🔓 Lift Lockdown'; btn.style.background = '#2D6A4F'; }
+        if (banner) {
+          banner.style.display     = 'block';
+          banner.style.background  = '#FFEBEE';
+          banner.style.color       = '#9B2226';
+          banner.style.border      = '1px solid rgba(155,34,38,0.3)';
+          banner.textContent       = '🔒 LOCKDOWN ACTIVE — Customer views show maintenance page. Admin portal is unlocked.';
+        }
+      } else {
+        if (btn)    { btn.textContent = '🔒 Activate Lockdown'; btn.style.background = '#9B2226'; }
+        if (banner) { banner.style.display = 'none'; }
+      }
+    }
+
+    async function toggleLockdown() {
+      try {
+        const res = await fetch(`${API}/security/lockdown`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ active: !lockdownCurrentlyActive })
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        lockdownCurrentlyActive = !!data.lockdownActive;
+        updateLockdownUI();
+        showToast(lockdownCurrentlyActive
+          ? '🔒 Lockdown activated! Customer views show maintenance page.'
+          : '🔓 Lockdown lifted. Customer ordering live.');
+      } catch (_) {
+        showToast('Failed to toggle lockdown.', true);
+      }
+    }
+
+    async function dismissAlert(id) {
+      try {
+        await fetch(`${API}/security/alerts/${id}`, { method: 'DELETE' });
+        loadSecurityAlerts();
+        updateSecurityBadge();
+      } catch (_) {}
+    }
+
+    async function clearAllAlerts() {
+      if (!confirm('Clear all security alerts? This cannot be undone.')) return;
+      try {
+        await fetch(`${API}/security/alerts`, { method: 'DELETE' });
+        loadSecurityAlerts();
+        updateSecurityBadge();
+        dismissEmergencyBanner();
+        showToast('All security alerts cleared.');
+      } catch (_) {
+        showToast('Failed to clear alerts.', true);
+      }
+    }
+
+    async function updateSecurityBadge() {
+      try {
+        const res = await fetch(`${API}/security/alerts`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const alerts = data.alerts || [];
+        const badge = document.getElementById('securityAlertBadge');
+        const count = alerts.length;
+        if (badge) {
+          badge.textContent    = count;
+          badge.style.display  = count > 0 ? 'inline-block' : 'none';
+        }
+        // Check for new intrusion to sound alarm
+        if (count > 0 && lastKnownAlertId !== null && alerts[0].id !== lastKnownAlertId) {
+          lastKnownAlertId = alerts[0].id;
+          triggerAudibleAlarm(alerts[0]);
+        }
+      } catch (_) {}
+    }
+    // ── END SECURITY MONITOR ─────────────────────────────────────────────
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadOrders();
+      // Auto-refresh orders while on orders tab
+      setInterval(() => {
+        const activeTab = document.getElementById('tab-orders');
+        if (activeTab && activeTab.classList.contains('active')) {
+          loadOrders(true);
+        }
+      }, 4000);
+
+      // Fast Security Alarm & Intrusion polling (every 3.5 seconds)
+      updateSecurityBadge();
+      setInterval(updateSecurityBadge, 3500);
+
+      // Request browser notification permission if available
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+    });
+
+  </script>
+</body>
+</html>

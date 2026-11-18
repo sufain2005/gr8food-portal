@@ -1,0 +1,2860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>gr8food portal — Authentic Cuisine & Food Ordering</title>
+  
+  <!-- Session Auth Guard + Intrusion Detection (Fires before any DOM renders) -->
+  <script>
+    (function enforceMenuAuth() {
+      var stored = localStorage.getItem('gr8food_user');
+      var isAuthenticated = false;
+
+      if (stored && stored !== 'null') {
+        try {
+          var user = JSON.parse(stored);
+          if (user && user.username && user.role) {
+            isAuthenticated = true;
+          }
+        } catch (e) {
+          localStorage.removeItem('gr8food_user');
+        }
+      }
+
+      if (!isAuthenticated) {
+        // Log the bypass attempt to backend before redirecting
+        try {
+          fetch('/api/security/alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'UNAUTHENTICATED_ACCESS',
+              page: 'menu.html',
+              detail: 'Direct URL access to menu.html without valid session',
+              userAgent: navigator.userAgent
+            }),
+            keepalive: true
+          });
+        } catch (e) {}
+        window.location.replace('login.html?auth=required');
+      }
+    })();
+  </script>
+
+  <!-- 
+    ================================================================================
+    [PROTECTION DECOY SHIELD] RUNTIME HASH: 0x8C74D1E9A4B302F19E8746D20BA49E81
+    SYSTEM INTEGRITY: SHA-512 VIRTUALIZED RUNTIME VAULT.
+    UNAUTHORIZED INVENTORY, EXTRACTION OR REVERSE-ENGINEERING OF SOURCE CODE
+    IS STRICTLY PROHIBITED AND MONITORED BY REAL-TIME DEFENSE ALARMS.
+    ================================================================================
+  -->
+  <script>
+    (function initDecoySourceGuard() {
+      function showDecoySecurityOverlay(triggerAction) {
+        let overlay = document.getElementById('decoySecurityOverlay');
+        if (!overlay) {
+          overlay = document.createElement('div');
+          overlay.id = 'decoySecurityOverlay';
+          overlay.style.cssText = 'position:fixed;inset:0;background:#1C241C;z-index:9999999;color:#FFF8ED;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:sans-serif;box-shadow:inset 0 0 100px rgba(0,0,0,0.8);';
+          overlay.innerHTML = `
+            <div style="font-size:64px;margin-bottom:16px;">🛡️</div>
+            <h2 style="font-size:26px;color:#F0E6D2;margin-bottom:8px;">Source Code Inspection Prohibited</h2>
+            <p style="font-size:14px;color:#A89F8D;max-width:480px;line-height:1.6;margin-bottom:20px;">
+              Direct code extraction and developer inspection are restricted. This attempt has been recorded and an intrusion alert was transmitted to the Administrator.
+            </p>
+            <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);padding:10px 22px;border-radius:9999px;font-family:monospace;font-size:12px;color:#E0D6C2;">
+              SECURITY KERNEL: Virtual Encrypted Sandbox [ACTIVE]
+            </div>
+          `;
+          document.body.appendChild(overlay);
+        }
+        overlay.style.display = 'flex';
+        setTimeout(() => {
+          if (overlay) overlay.style.display = 'none';
+        }, 2400);
+
+        try {
+          fetch('/api/security/alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'SOURCE_CODE_INSPECTION_ATTEMPT',
+              page: 'menu.html',
+              detail: 'Attempted: ' + triggerAction,
+              userAgent: navigator.userAgent
+            }),
+            keepalive: true
+          });
+        } catch (_) {}
+
+        try {
+          console.clear();
+          console.log('%c[SECURITY SHIELD] %cDecoy Virtualization Environment Active.', 'color:#9B2226;font-weight:bold;font-size:14px;', 'color:#A89F8D;');
+          console.log('%cEncrypted Memory Address: 0x7FFF89A4..0x7FFF89FF [LOCKED]', 'color:#646E62;font-family:monospace;');
+        } catch (_) {}
+      }
+
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        showDecoySecurityOverlay('Right-Click Context Menu');
+      }, { passive: false });
+
+      document.addEventListener('keydown', function(e) {
+        const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+        const ctrl = isMac ? e.metaKey : e.ctrlKey;
+
+        if (e.key === 'F12' || e.keyCode === 123) {
+          e.preventDefault(); e.stopPropagation();
+          showDecoySecurityOverlay('F12 DevTools Key');
+          return false;
+        }
+        if (ctrl && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) {
+          e.preventDefault(); e.stopPropagation();
+          showDecoySecurityOverlay('Ctrl+U (View Source)');
+          return false;
+        }
+        if (ctrl && e.shiftKey && (
+          e.key === 'I' || e.key === 'i' || e.keyCode === 73 ||
+          e.key === 'J' || e.key === 'j' || e.keyCode === 74 ||
+          e.key === 'C' || e.key === 'c' || e.keyCode === 67
+        )) {
+          e.preventDefault(); e.stopPropagation();
+          showDecoySecurityOverlay('Ctrl+Shift+I/J/C Inspect Shortcut');
+          return false;
+        }
+        if (ctrl && (e.key === 's' || e.key === 'S' || e.keyCode === 83)) {
+          e.preventDefault(); e.stopPropagation();
+          showDecoySecurityOverlay('Ctrl+S (Save Page)');
+          return false;
+        }
+        if (ctrl && (e.key === 'p' || e.key === 'P' || e.keyCode === 80)) {
+          e.preventDefault(); e.stopPropagation();
+          showDecoySecurityOverlay('Ctrl+P (Print Page)');
+          return false;
+        }
+      }, { capture: true, passive: false });
+    })();
+  </script>
+
+  <!-- Google Fonts: DM Serif Display & Manrope -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       THEME CONFIGURATION VARIABLES (Earthy Cream & Muted Khaki Palette)
+       ========================================================================== */
+    :root {
+      /* Main Color Palette */
+      --bg-cream: #FFF8ED;              /* Warm cream main background */
+      --bg-cream-alt: #F7EFE1;          /* Subtle warm cream tone */
+      --color-khaki: #A89F8D;           /* Main brand colour, muted khaki */
+      --color-khaki-light: #EBE5DB;     /* Soft khaki tint for backgrounds/borders */
+      --color-khaki-dark: #877D6B;      /* Deeper khaki for active states */
+      --color-olive: #384338;           /* Dark olive for headings, nav, and primary buttons */
+      --color-olive-dark: #272F27;      /* Deepest dark olive */
+      --color-olive-light: #4D5A4D;     /* Medium olive for accents */
+      --card-bg: #FFFFFF;               /* Soft ivory / clean white for cards */
+      
+      /* Typography & Text */
+      --text-dark: #343A32;             /* High-contrast dark olive-slate body text */
+      --text-muted: #646E62;            /* Secondary muted text */
+      --text-light: #F8FAFC;            /* Clean light text on dark olive backgrounds */
+      
+      /* Feedback Colors */
+      --color-success: #2D6A4F;         /* Earthy forest green */
+      --color-success-bg: #E8F5E9;
+      --color-danger: #9B2226;          /* Muted crimson */
+      --color-danger-bg: #FFEBEE;
+      --color-warning: #B07D1C;         /* Warm amber */
+      
+      /* Borders & Shadows */
+      --border-subtle: rgba(56, 67, 56, 0.12);
+      --border-khaki: rgba(168, 159, 141, 0.6);
+      --shadow-sm: 0 2px 8px rgba(56, 67, 56, 0.05);
+      --shadow-md: 0 8px 24px rgba(56, 67, 56, 0.08);
+      --shadow-lg: 0 16px 40px rgba(56, 67, 56, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
+      --radius-full: 9999px;
+      
+      /* Font Families */
+      --font-heading: 'DM Serif Display', Georgia, serif;
+      --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, .font-serif {
+      font-family: var(--font-heading);
+      color: var(--color-olive);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    a { color: var(--color-olive); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--color-khaki-dark); }
+
+    /* ================= ACCESSIBILITY FOCUS ================= */
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--color-khaki-dark);
+      outline-offset: 2px;
+    }
+
+    /* ================= TOP PROMO BANNER ================= */
+    #offerBanner {
+      background: var(--color-olive-dark);
+      color: #FFF8ED;
+      border-bottom: 1px solid var(--border-khaki);
+      padding: 9px 20px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    /* ================= STICKY HEADER & NAVBAR ================= */
+    header {
+      background: var(--color-olive);
+      color: var(--text-light);
+      padding: 14px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(39, 47, 39, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-heading);
+      font-size: 24px;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+    }
+    .brand-logo span.khaki-dot { color: var(--color-khaki); }
+    .brand-logo .brand-tagline {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--color-khaki);
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+      padding-left: 10px;
+      margin-left: 2px;
+    }
+
+    .nav-links-center {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav-links-center a {
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      transition: color 0.2s;
+    }
+    .nav-links-center a:hover { color: var(--color-khaki); }
+
+    .header-btns {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Cart Header Button */
+    .btn-nav-cart {
+      background: var(--color-khaki);
+      color: var(--color-olive-dark);
+      border: 1px solid var(--color-khaki);
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-nav-cart:hover {
+      background: #FFFFFF;
+      color: var(--color-olive);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(168, 159, 141, 0.4);
+    }
+    .cart-badge-count {
+      background: var(--color-olive-dark);
+      color: #FFFFFF;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      font-weight: 800;
+    }
+
+    /* Profile Dropdown Navigation */
+    .profile-dropdown-wrap {
+      position: relative;
+    }
+    .profile-trigger-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .profile-trigger-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .nav-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #FFF;
+      border: 1px solid var(--color-khaki);
+    }
+    .dropdown-chevron {
+      transition: transform 0.2s ease;
+    }
+    .profile-dropdown-wrap.open .dropdown-chevron {
+      transform: rotate(180deg);
+    }
+    .profile-dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      background: var(--card-bg);
+      color: var(--text-dark);
+      border: 1px solid var(--border-khaki);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      width: 220px;
+      padding: 8px 0;
+      z-index: 1050;
+      animation: dropdownFade 0.2s ease forwards;
+    }
+    .profile-dropdown-wrap.open .profile-dropdown-menu {
+      display: block;
+    }
+    @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dropdown-user-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 4px;
+    }
+    .dropdown-user-header strong {
+      display: block;
+      font-size: 13.5px;
+      color: var(--color-olive);
+    }
+    .dropdown-user-header small {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      text-transform: capitalize;
+    }
+    .dropdown-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      background: none;
+      border: none;
+      color: var(--text-dark);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .dropdown-item:hover {
+      background: var(--bg-cream);
+      color: var(--color-olive);
+    }
+    .dropdown-item.text-danger {
+      color: var(--color-danger);
+    }
+    .dropdown-item.text-danger:hover {
+      background: var(--color-danger-bg);
+    }
+    .dropdown-divider {
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 4px 0;
+    }
+
+    /* ================= HERO SECTION ================= */
+    .hero-section {
+      background: linear-gradient(180deg, var(--bg-cream) 0%, var(--bg-cream-alt) 100%);
+      padding: 60px 24px 44px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .hero-container {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-khaki);
+      color: var(--color-olive);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .hero-badge span.dot {
+      width: 6px;
+      height: 6px;
+      background: var(--color-khaki-dark);
+      border-radius: 50%;
+    }
+    .hero-title {
+      font-size: clamp(34px, 4.5vw, 52px);
+      line-height: 1.15;
+      color: var(--color-olive);
+      margin-bottom: 18px;
+    }
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+      line-height: 1.65;
+      max-width: 540px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    /* Primary Dark Olive Button */
+    .btn-hero-primary {
+      background: var(--color-olive);
+      color: #FFFFFF;
+      padding: 14px 28px;
+      border-radius: var(--radius-full);
+      font-size: 14.5px;
+      font-weight: 700;
+      border: 2px solid var(--color-olive);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .btn-hero-primary:hover {
+      background: var(--color-khaki);
+      border-color: var(--color-khaki);
+      color: var(--color-olive-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    /* Secondary Outline Button */
+    .btn-hero-secondary {
+      background: transparent;
+      color: var(--color-olive);
+      padding: 13px 26px;
+      border-radius: var(--radius-full);
+      font-size: 14.5px;
+      font-weight: 700;
+      border: 2px solid var(--color-olive);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .btn-hero-secondary:hover {
+      background: var(--color-olive);
+      color: #FFFFFF;
+      transform: translateY(-2px);
+    }
+
+    /* Hero Food Image Frame */
+    .hero-media-wrap {
+      position: relative;
+    }
+    .hero-image-frame {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      border: 3px solid #FFFFFF;
+      background: #FFFFFF;
+      max-height: 420px;
+    }
+    .hero-image-frame img {
+      width: 100%;
+      height: 100%;
+      max-height: 420px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+    .hero-image-frame:hover img {
+      transform: scale(1.02);
+    }
+    .hero-float-badge {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-khaki);
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-md);
+      z-index: 2;
+    }
+    .float-badge-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-cream);
+      color: var(--color-olive);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      border: 1px solid var(--border-khaki);
+    }
+    .float-badge-text strong {
+      display: block;
+      font-size: 12.5px;
+      color: var(--color-olive);
+    }
+    .float-badge-text span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ================= NATURAL FOOD THOUGHT CALLOUTS ================= */
+    .food-thought-interstitial {
+      background: var(--bg-cream-alt);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 24px 20px;
+      text-align: center;
+      position: relative;
+    }
+    .thought-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+    .thought-leaf {
+      color: var(--color-khaki-dark);
+      font-size: 18px;
+    }
+    .thought-quote {
+      font-family: var(--font-heading);
+      font-size: clamp(17px, 2.2vw, 22px);
+      font-style: italic;
+      color: var(--color-olive);
+      letter-spacing: 0.2px;
+    }
+
+    /* ================= DISCOVER YOUR FAVOURITES CATEGORY SECTION ================= */
+    .discover-section {
+      max-width: 1160px;
+      margin: 44px auto 10px;
+      padding: 0 24px;
+    }
+    .section-intro-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .section-tag {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--color-khaki-dark);
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+    .section-intro-header h2 {
+      font-size: clamp(26px, 3.2vw, 36px);
+      color: var(--color-olive);
+      margin-bottom: 6px;
+    }
+    .section-intro-header p {
+      color: var(--text-muted);
+      font-size: 14.5px;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .category-chip-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .category-chip-card:hover, .category-chip-card.active {
+      border-color: var(--color-olive);
+      background: #FFFFFF;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .category-chip-card.active {
+      background: var(--color-olive);
+      color: #FFFFFF;
+      border-color: var(--color-olive);
+    }
+    .category-chip-card.active .cat-title {
+      color: #FFFFFF;
+    }
+    .category-chip-card.active .cat-count {
+      color: var(--color-khaki-light);
+    }
+    .cat-icon-box {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-cream);
+      border: 1px solid var(--border-khaki);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--color-olive);
+      flex-shrink: 0;
+    }
+    .category-chip-card.active .cat-icon-box {
+      background: var(--color-olive-dark);
+      border-color: var(--color-khaki);
+    }
+    .cat-title {
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--color-olive);
+      line-height: 1.2;
+    }
+    .cat-count {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ================= SEARCH & FILTER CONTROLS ================= */
+    .menu-controls-bar {
+      max-width: 1160px;
+      margin: 32px auto 20px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .search-box-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 360px;
+    }
+    .search-box-wrap input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text-dark);
+      outline: none;
+      transition: all 0.2s;
+    }
+    .search-box-wrap input:focus {
+      border-color: var(--color-khaki-dark);
+      box-shadow: 0 0 0 3px rgba(168, 159, 141, 0.2);
+    }
+    .search-icon-fixed {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .veg-filter-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+    }
+    .veg-filter-toggle input {
+      accent-color: var(--color-success);
+      cursor: pointer;
+    }
+
+    /* ================= MAIN DISHES MENU GRID ================= */
+    .menu-main-section {
+      max-width: 1160px;
+      margin: 10px auto 60px;
+      padding: 0 24px;
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .dish-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .dish-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-khaki);
+    }
+    .dish-card.out-of-stock {
+      opacity: 0.75;
+    }
+    .dish-media {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+      background: var(--bg-cream-alt);
+    }
+    .dish-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .dish-card:hover .dish-media img {
+      transform: scale(1.05);
+    }
+    .dish-stock-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(39, 47, 39, 0.85);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      backdrop-filter: blur(4px);
+    }
+    .dish-stock-badge.out {
+      background: rgba(155, 34, 38, 0.9);
+    }
+    .dish-category-tag {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: #FFFFFF;
+      color: var(--color-olive);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-khaki);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .dish-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+    .dish-title {
+      font-family: var(--font-heading);
+      font-size: 19px;
+      color: var(--color-olive);
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+    .dish-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 14px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .dish-footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .dish-price {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-olive);
+    }
+
+    /* Add / Quantity Buttons */
+    .btn-add-dish {
+      background: var(--color-olive);
+      color: #FFFFFF;
+      border: none;
+      padding: 7px 16px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-add-dish:hover {
+      background: var(--color-khaki-dark);
+    }
+    .btn-add-dish:disabled {
+      background: #A0A0A0;
+      cursor: not-allowed;
+    }
+    .qty-control-group {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-cream-alt);
+      border: 1px solid var(--border-khaki);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .qty-btn {
+      background: none;
+      border: none;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--color-olive);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .qty-btn:hover { background: var(--color-khaki-light); }
+    .qty-number {
+      font-size: 13px;
+      font-weight: 800;
+      min-width: 22px;
+      text-align: center;
+      color: var(--color-olive);
+    }
+
+    /* ================= CATERING COMBOS CAROUSEL ================= */
+    .combos-section {
+      background: var(--color-olive);
+      color: var(--text-light);
+      padding: 50px 24px;
+      margin-bottom: 40px;
+    }
+    .combos-container {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+    .combos-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .combos-header h2 {
+      color: #FFFFFF;
+      font-size: clamp(26px, 3.2vw, 36px);
+      margin-bottom: 6px;
+    }
+    .combos-header p {
+      color: var(--color-khaki-light);
+      font-size: 14px;
+    }
+    .combos-slider {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding-bottom: 14px;
+      scroll-snap-type: x mandatory;
+    }
+    .combo-card {
+      background: var(--color-olive-dark);
+      border: 1px solid rgba(168, 159, 141, 0.4);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      min-width: 280px;
+      flex: 1;
+      scroll-snap-align: start;
+    }
+    .combo-badge {
+      display: inline-block;
+      background: var(--color-khaki);
+      color: var(--color-olive-dark);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .combo-title {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+    .combo-desc {
+      font-size: 13.5px;
+      color: #E2E8F0;
+      line-height: 1.5;
+    }
+
+    /* ================= RESTAURANT STORY SECTION ================= */
+    .story-section {
+      max-width: 1160px;
+      margin: 40px auto 60px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .story-content h2 {
+      font-size: clamp(28px, 3.5vw, 40px);
+      color: var(--color-olive);
+      margin-bottom: 16px;
+    }
+    .story-content p {
+      color: var(--text-dark);
+      margin-bottom: 14px;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+    .story-points {
+      list-style: none;
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .story-points li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--color-olive);
+    }
+    .story-points li span.olive-icon {
+      color: var(--color-khaki-dark);
+      font-size: 16px;
+    }
+    .story-image-wrap {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      border: 3px solid #FFFFFF;
+    }
+    .story-image-wrap img {
+      width: 100%;
+      height: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ================= CUSTOMER REVIEWS & FEEDBACK ================= */
+    .reviews-section {
+      max-width: 1160px;
+      margin: 0 auto 60px;
+      padding: 0 24px;
+    }
+    .reviews-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .reviews-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+      max-height: 340px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    .review-item {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+    }
+    .review-author {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--color-olive);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .review-text {
+      font-size: 13px;
+      color: var(--text-dark);
+      line-height: 1.45;
+    }
+    .review-reply {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: var(--card-bg);
+      border-left: 3px solid var(--color-khaki);
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--color-olive);
+    }
+    .review-reply strong {
+      display: block;
+      color: var(--color-olive-dark);
+      margin-bottom: 2px;
+    }
+    .review-form {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .review-form input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-family: inherit;
+      outline: none;
+    }
+    .review-form input:focus {
+      border-color: var(--color-khaki-dark);
+    }
+    .btn-review-submit {
+      background: var(--color-olive);
+      color: #FFFFFF;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-review-submit:hover { background: var(--color-khaki-dark); }
+
+    /* ================= TIDY FOOTER ================= */
+    footer {
+      background: var(--color-olive-dark);
+      color: #F8FAFC;
+      padding: 48px 36px 28px;
+      border-top: 1px solid var(--border-khaki);
+    }
+    .footer-grid {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 36px;
+    }
+    .footer-brand h3 {
+      font-size: 24px;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+    }
+    .footer-brand p {
+      color: #CBD5E1;
+      font-size: 13.5px;
+      line-height: 1.55;
+      max-width: 320px;
+    }
+    .footer-col h4 {
+      font-size: 15px;
+      color: var(--color-khaki-light);
+      margin-bottom: 14px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .footer-col ul {
+      list-style: none;
+    }
+    .footer-col li {
+      margin-bottom: 8px;
+      font-size: 13.5px;
+      color: #E2E8F0;
+    }
+    .footer-col a {
+      color: #E2E8F0;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--color-khaki); }
+    .footer-bottom {
+      max-width: 1160px;
+      margin: 0 auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      color: #94A3B8;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* ================= MODALS & DRAWERS ================= */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(39, 47, 39, 0.7);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 16px;
+    }
+    .modal-box {
+      background: var(--card-bg);
+      color: var(--text-dark);
+      border: 1px solid var(--border-khaki);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+    .modal-close-btn:hover {
+      background: var(--bg-cream);
+      color: var(--color-olive);
+    }
+    .modal-title {
+      font-size: 24px;
+      color: var(--color-olive);
+      margin-bottom: 16px;
+    }
+
+    /* Live Distance Box in Order Checkout */
+    .distance-calc-panel {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-khaki);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin: 12px 0;
+    }
+    .dist-flex-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .dist-highlight {
+      font-weight: 800;
+      color: var(--color-olive);
+    }
+    .dist-status-text {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Live Order Status Countdown Bar */
+    .tracker-card {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-khaki);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .tracker-status-pill {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .tracker-status-pill.accepted {
+      background: var(--color-success-bg);
+      color: var(--color-success);
+    }
+    .tracker-status-pill.rejected {
+      background: var(--color-danger-bg);
+      color: var(--color-danger);
+    }
+    .tracker-status-pill.pending {
+      background: #FEF3C7;
+      color: var(--color-warning);
+    }
+    .timer-countdown-display {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      color: var(--color-olive);
+      margin: 8px 0;
+      letter-spacing: 1px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 860px) {
+      header { padding: 12px 18px; }
+      .nav-links-center { display: none; }
+      .hero-container {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .story-section {
+        grid-template-columns: 1fr;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+    }
+
+    /* Print Stylesheet for Invoices */
+    @media print {
+      body * { visibility: hidden !important; }
+      #customerPrintableBill, #customerPrintableBill * { visibility: visible !important; }
+      #customerPrintableBill {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        max-width: 480px !important;
+        margin: 0 auto !important;
+        padding: 16px !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .modal-backdrop {
+        background: none !important;
+        position: static !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Offer Banner -->
+  <div id="offerBanner">
+    🔥 Welcome to gr8food portal! Fresh dum biryani & fast doorstep delivery available.
+  </div>
+
+  <!-- Sticky Header & Navigation -->
+  <header>
+    <div class="brand-logo">
+      <span>gr8food portal</span>
+      <span class="khaki-dot">✦</span>
+      <span class="brand-tagline">Artisan Cuisine</span>
+    </div>
+
+    <ul class="nav-links-center">
+      <li><a href="#discoverSection">Favourites</a></li>
+      <li><a href="#menuSection">Menu</a></li>
+      <li><a href="#combosSection">Feasts & Catering</a></li>
+      <li><a href="#storySection">Our Story</a></li>
+      <li><a href="#reviewsSection">Reviews</a></li>
+    </ul>
+
+    <div class="header-btns">
+      <!-- Accessible Profile Dropdown -->
+      <div class="profile-dropdown-wrap" id="profileDropdownWrap">
+        <button class="profile-trigger-btn" id="profileTriggerBtn" onclick="toggleProfileDropdown()" aria-haspopup="true" aria-expanded="false" aria-label="User profile and menu">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Guest" id="navAvatarImg" class="nav-avatar" alt="User Avatar">
+          <span id="navUsername">Account</span>
+          <svg class="dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="profile-dropdown-menu" id="profileDropdownMenu" role="menu">
+          <div class="dropdown-user-header">
+            <strong id="dropdownFullName">Guest Customer</strong>
+            <small id="dropdownRole">Customer</small>
+          </div>
+          <button role="menuitem" class="dropdown-item" onclick="openProfileModal(); closeProfileDropdown();">
+            <span>👤</span> My Profile & Address
+          </button>
+          <button role="menuitem" class="dropdown-item" onclick="viewMyLiveOrderStatus(); closeProfileDropdown();">
+            <span>📦</span> Live Order Tracker
+          </button>
+          <a role="menuitem" id="navAdminHubLink" class="dropdown-item" href="admin.html" style="display: none; color: var(--color-olive); font-weight: 700;">
+            <span>⚙️</span> Admin Operations Hub
+          </a>
+          <div class="dropdown-divider"></div>
+          <button role="menuitem" class="dropdown-item text-danger" onclick="logout()">
+            <span>🚪</span> Sign Out
+          </button>
+        </div>
+      </div>
+
+      <!-- View Cart Button -->
+      <button class="btn-nav-cart" onclick="openCartModal()" aria-label="View Shopping Cart">
+        <span>🛒 Cart</span>
+        <span class="cart-badge-count" id="cartCountBadge">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      
+      <!-- Hero Text Column -->
+      <div class="hero-text-col">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          <span>Crafted with Authentic Spices</span>
+        </div>
+        
+        <h1 class="hero-title">Good Food. Great Moments.</h1>
+        
+        <p class="hero-desc">
+          Fresh dum biryani, slow-cooked curries, and tandoor favourites—made with care, delivered to your doorstep.
+        </p>
+
+        <div class="hero-actions">
+          <button class="btn-hero-primary" onclick="scrollToMenuAndFocus()">
+            <span>Order Now</span>
+            <span aria-hidden="true">→</span>
+          </button>
+          
+          <button class="btn-hero-secondary" onclick="scrollToMenuSection()">
+            <span>Explore the Menu</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Hero Food Image Showcase -->
+      <div class="hero-media-wrap">
+        <div class="hero-image-frame">
+          <img 
+            src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=85" 
+            alt="Chef's Special Dum Biryani" 
+            loading="eager"
+          />
+        </div>
+        <div class="hero-float-badge">
+          <div class="float-badge-icon">🌿</div>
+          <div class="float-badge-text">
+            <strong>Chef’s Special Biryani</strong>
+            <span>Slow-cooked Dum & Basmati</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Natural Food Thought Interstitial 1 -->
+  <div class="food-thought-interstitial">
+    <div class="thought-inner">
+      <span class="thought-leaf">✦</span>
+      <span class="thought-quote">“Good food. Great moments.”</span>
+      <span class="thought-leaf">✦</span>
+    </div>
+  </div>
+
+  <!-- Discover Your Favourites Section -->
+  <section class="discover-section" id="discoverSection">
+    <div class="section-intro-header">
+      <span class="section-tag">Explore Cuisine</span>
+      <h2>Discover Your Favourites</h2>
+      <p>Handcrafted authentic delicacies made fresh to order by master chefs</p>
+    </div>
+
+    <div class="categories-grid" id="categoryChipsGrid">
+      <!-- Populated dynamically with real categories and dish counts -->
+    </div>
+  </section>
+
+  <!-- Search & Filter Controls -->
+  <div class="menu-controls-bar" id="menuSection">
+    <div class="search-box-wrap">
+      <span class="search-icon-fixed">🔍</span>
+      <input type="text" id="dishSearchInput" placeholder="Search dishes, curries, breads..." oninput="handleSearchFilter()" />
+    </div>
+
+    <label class="veg-filter-toggle">
+      <input type="checkbox" id="availableOnlyToggle" onchange="handleSearchFilter()" />
+      <span>Show Available Dishes Only</span>
+    </label>
+  </div>
+
+  <!-- Main Dishes Menu Section -->
+  <section class="menu-main-section">
+    <div class="menu-grid" id="dishesMenuGrid">
+      <!-- Loaded from /api/menu dynamically -->
+    </div>
+  </section>
+
+  <!-- Natural Food Thought Interstitial 2 -->
+  <div class="food-thought-interstitial">
+    <div class="thought-inner">
+      <span class="thought-leaf">✦</span>
+      <span class="thought-quote">“Made with care, served with love.”</span>
+      <span class="thought-leaf">✦</span>
+    </div>
+  </div>
+
+  <!-- Bulk Catering & Feasts Section -->
+  <section class="combos-section" id="combosSection">
+    <div class="combos-container">
+      <div class="combos-header">
+        <h2>Grand Catering & Party Feasts</h2>
+        <p>Generous multi-course party platters and customized banquet packages</p>
+      </div>
+
+      <div class="combos-slider" id="combosSlider">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Natural Food Thought Interstitial 3 -->
+  <div class="food-thought-interstitial">
+    <div class="thought-inner">
+      <span class="thought-leaf">✦</span>
+      <span class="thought-quote">“Fresh flavours, shared happiness.”</span>
+      <span class="thought-leaf">✦</span>
+    </div>
+  </div>
+
+  <!-- Restaurant Story Section -->
+  <section class="story-section" id="storySection">
+    <div class="story-content">
+      <h2>Our Kitchen Tradition</h2>
+      <p>
+        At <strong>gr8food portal</strong>, we believe genuine dining starts with time-tested recipes, locally sourced produce, and honest culinary care.
+      </p>
+      <p>
+        Every pot of dum biryani is sealed with dough to lock in aroma, each curry is slowly reduced with freshly ground spices, and all tandoor breads are fired right before dispatch.
+      </p>
+      <ul class="story-points">
+        <li><span class="olive-icon">✔</span> 100% Fresh Daily Preparation</li>
+        <li><span class="olive-icon">✔</span> Authentic Tandoor & Dum Pot</li>
+        <li><span class="olive-icon">✔</span> Clean Kitchen Hygiene</li>
+        <li><span class="olive-icon">✔</span> Swift Thermal Packaging</li>
+      </ul>
+    </div>
+    
+    <div class="story-image-wrap">
+      <img 
+        src="https://images.unsplash.com/photo-1545247181-516773cae7be?w=800&auto=format&fit=crop&q=80" 
+        alt="Artisan cooking process" 
+        loading="lazy"
+      />
+    </div>
+  </section>
+
+  <!-- Customer Reviews & Feedback Section -->
+  <section class="reviews-section" id="reviewsSection">
+    <div class="reviews-box">
+      <div class="section-intro-header" style="margin-bottom: 20px;">
+        <span class="section-tag">Community Feedback</span>
+        <h2>Guest Reviews & Kitchen Notes</h2>
+      </div>
+
+      <div class="reviews-list" id="reviewsListContainer">
+        <!-- Reviews loaded from /api/reviews -->
+      </div>
+
+      <form class="review-form" onsubmit="submitCustomerReview(event)">
+        <input type="text" id="reviewTextInput" placeholder="Share your dining experience with our kitchen..." required />
+        <button type="submit" class="btn-review-submit">Post Review</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Tidy Footer -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>gr8food portal</h3>
+        <p>Artisan flavours, authentic spice blends, and reliable doorstep delivery for home dining and celebration catering.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#discoverSection">Featured Dishes</a></li>
+          <li><a href="#menuSection">Explore Menu</a></li>
+          <li><a href="#combosSection">Catering Packages</a></li>
+          <li><a href="javascript:void(0)" onclick="openProfileModal()">Account Settings</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Kitchen & Hours</h4>
+        <ul>
+          <li>📍 Brigade Road, Central Bangalore</li>
+          <li>🕒 11:00 AM – 11:30 PM (Daily)</li>
+          <li>📞 Hotline: +91 80733 49233</li>
+          <li>⚡ Fast Delivery in 30–45 Mins</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 gr8food portal. All rights reserved.</span>
+      <span>Made with care, served with love.</span>
+    </div>
+  </footer>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Cart & Checkout Modal with Real Distance Calculation -->
+  <div id="cartModal" class="modal-backdrop" onclick="if(event.target===this)closeCartModal()">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeCartModal()">✕</button>
+      <h3 class="modal-title">🛒 Complete Your Order</h3>
+
+      <!-- Cart Items List -->
+      <div id="cartItemsList" style="margin-bottom: 16px;"></div>
+
+      <!-- Dine / Delivery Mode -->
+      <div style="margin-bottom: 14px;">
+        <label style="font-size: 13px; font-weight: 700; color: var(--color-olive); display: block; margin-bottom: 6px;">Order Type</label>
+        <select id="dineOptionSelect" onchange="handleDineOptionChange()" style="width: 100%; padding: 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit;">
+          <option value="Delivery to Home">Mode: Delivery to Home</option>
+          <option value="Takeaway Parcel">Mode: Takeaway Parcel</option>
+          <option value="Dine-In">Mode: Dine-In</option>
+        </select>
+      </div>
+
+      <!-- Home Delivery Location with Real Distance Calculation -->
+      <div id="deliveryDetailsBlock">
+        <label style="font-size: 13px; font-weight: 700; color: var(--color-olive); display: block; margin-bottom: 6px;">📍 Complete Home Address *</label>
+        <textarea 
+          id="deliveryAddressInput" 
+          rows="2" 
+          placeholder="e.g. 402 Palm Court, Indiranagar, Bangalore" 
+          oninput="debounceCalculateDistance()"
+          style="width: 100%; padding: 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 13.5px; font-family: inherit; resize: vertical;"
+        ></textarea>
+
+        <!-- Dynamic Real Distance Display -->
+        <div class="distance-calc-panel" id="distanceCalcPanel">
+          <div class="dist-flex-row">
+            <span>📍 Map Distance from Kitchen:</span>
+            <span class="dist-highlight" id="distanceKmDisplay">4.5 km</span>
+          </div>
+          <div class="dist-flex-row" style="margin-top: 4px;">
+            <span>Delivery Fee:</span>
+            <span class="dist-highlight" id="deliveryFeeDisplay">₹41</span>
+          </div>
+          <div class="dist-status-text" id="distanceStatusText">
+            Auto-calculated from restaurant kitchen address (₹9/km)
+          </div>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <label style="font-size: 13px; font-weight: 700; color: var(--color-olive); display: block; margin-bottom: 6px;">📞 Delivery Mobile Number *</label>
+          <input 
+            type="tel" 
+            id="deliveryPhoneInput" 
+            placeholder="e.g. 8073349233" 
+            style="width: 100%; padding: 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit;"
+          />
+        </div>
+
+        <div style="margin-top: 10px;">
+          <label style="font-size: 13px; font-weight: 700; color: var(--color-olive); display: block; margin-bottom: 6px;">📝 Cooking / Delivery Notes (Optional)</label>
+          <input 
+            type="text" 
+            id="deliveryNotesInput" 
+            placeholder="e.g. Extra spicy gravy, ring bell" 
+            style="width: 100%; padding: 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 13.5px; font-family: inherit;"
+          />
+        </div>
+      </div>
+
+      <!-- Bill Copy Preference -->
+      <div style="margin: 14px 0;">
+        <label style="font-size: 13px; font-weight: 700; color: var(--color-olive); display: block; margin-bottom: 6px;">🧾 Bill Receipt Format</label>
+        <select id="billPreferenceSelect" style="width: 100%; padding: 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 13.5px; font-family: inherit; background: var(--bg-cream);">
+          <option value="Soft Copy">📄 Soft Copy (Digital Instant Invoice / WhatsApp & Email Download)</option>
+          <option value="Hard Copy">🖨️ Hard Copy (Physical Printed Receipt with Delivery Driver)</option>
+          <option value="Both">📑 Both (Digital Soft Copy + Printed Hard Copy)</option>
+        </select>
+        <small style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px; display: block;">
+          Select whether you need a digital soft copy or physical paper bill printed upon delivery.
+        </small>
+      </div>
+
+      <!-- Payment Option -->
+      <div style="margin: 14px 0;">
+        <label style="font-size: 13px; font-weight: 700; color: var(--color-olive); display: block; margin-bottom: 6px;">Payment Method</label>
+        <select id="paymentMethodSelect" onchange="toggleUpiSection()" style="width: 100%; padding: 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit;">
+          <option value="Online">Instant UPI / QR Code</option>
+          <option value="Cash">Cash on Delivery (COD)</option>
+        </select>
+      </div>
+
+      <!-- UPI QR Block -->
+      <div id="upiPaymentBlock" style="text-align: center; background: var(--bg-cream); border: 1px solid var(--border-khaki); padding: 14px; border-radius: var(--radius-sm); margin-bottom: 14px;">
+        <div style="font-weight: 700; font-size: 13px; color: var(--color-olive); margin-bottom: 8px;">Scan UPI QR to Pay</div>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=8073349233@ybl&pn=Gr8Food" alt="UPI QR" style="border-radius: 8px; border: 2px solid var(--border-khaki); margin-bottom: 8px;" />
+        <input type="text" id="upiTransactionIdInput" placeholder="Enter 12-digit UPI Reference / UTR *" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 13px; text-align: center;" />
+      </div>
+
+      <!-- Financial Breakdown Summary -->
+      <div style="background: var(--bg-cream-alt); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 16px;">
+        <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:4px;">
+          <span>Items Subtotal:</span>
+          <strong id="cartSubtotalText">₹0</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:4px;" id="cartDeliveryRow">
+          <span>Delivery Charge:</span>
+          <strong id="cartDeliveryFeeText">₹0</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800; color:var(--color-olive); border-top:1px solid var(--border-subtle); padding-top:8px; margin-top:6px;">
+          <span>Total Payable:</span>
+          <span id="cartGrandTotalText">₹0</span>
+        </div>
+      </div>
+
+      <button onclick="submitOrderPlacement()" id="btnSubmitOrder" style="width: 100%; background: var(--color-olive); color: #FFFFFF; border: none; padding: 14px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s;">
+        Confirm & Place Order
+      </button>
+      <div id="orderStatusMsg" style="text-align: center; margin-top: 10px; font-size: 13px; font-weight: 700;"></div>
+    </div>
+  </div>
+
+  <!-- Live Order Tracker Modal -->
+  <div id="orderTrackerModal" class="modal-backdrop" onclick="if(event.target===this)closeOrderTrackerModal()">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeOrderTrackerModal()">✕</button>
+      <h3 class="modal-title">📦 Order Status & Countdown</h3>
+
+      <div id="trackerModalBody">
+        <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+          Checking for active orders...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Bill & Invoice Modal (Soft Copy / Hard Copy) -->
+  <div id="customerBillModal" class="modal-backdrop" onclick="if(event.target===this)closeCustomerBillModal()">
+    <div class="modal-box" style="max-width: 540px; width: 95%; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close-btn" onclick="closeCustomerBillModal()">✕</button>
+      <h3 class="modal-title">🧾 Official Order Invoice</h3>
+
+      <!-- Printable Invoice Area -->
+      <div id="customerPrintableBill" style="background:#FFFFFF; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:20px; color:#222; font-family:var(--font-body); margin-top: 10px;">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Bill Download & Print Actions -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px;">
+        <button onclick="printCustomerBill()" style="background: var(--color-olive); color: #FFFFFF; border: none; padding: 11px; border-radius: var(--radius-sm); font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <span>🖨️</span> Print Hard Copy
+        </button>
+        <button onclick="downloadCustomerSoftCopy()" style="background: var(--color-khaki-dark); color: #FFFFFF; border: none; padding: 11px; border-radius: var(--radius-sm); font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <span>📥</span> Download Soft Copy
+        </button>
+        <button onclick="sendCustomerBillWhatsApp()" style="background: #25D366; color: #FFFFFF; border: none; padding: 11px; border-radius: var(--radius-sm); font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <span>📲</span> Share on WhatsApp
+        </button>
+        <button onclick="sendCustomerBillEmail()" style="background: #3B5998; color: #FFFFFF; border: none; padding: 11px; border-radius: var(--radius-sm); font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <span>✉️</span> Send to Email
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Profile & Settings Modal -->
+  <div id="profileModal" class="modal-backdrop" onclick="if(event.target===this)closeProfileModal()">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeProfileModal()">✕</button>
+      <h3 class="modal-title">👤 My Profile & Settings</h3>
+
+      <form onsubmit="handleSaveUserProfile(event)">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Guest" id="profileModalAvatarImg" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--color-khaki); object-fit: cover;" />
+          <div style="margin-top: 8px;">
+            <input type="file" id="profileAvatarFileInput" accept="image/*" onchange="handleAvatarFileSelect(event)" style="font-size: 12px;" />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12.5px; font-weight: 700; color: var(--color-olive);">Full Name</label>
+          <input type="text" id="profileFullNameInput" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 13.5px;" />
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12.5px; font-weight: 700; color: var(--color-olive);">Phone Number</label>
+          <input type="tel" id="profilePhoneInput" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 13.5px;" />
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12.5px; font-weight: 700; color: var(--color-olive);">Saved Delivery Address</label>
+          <textarea id="profileAddressInput" rows="2" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 13.5px; resize: vertical;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12.5px; font-weight: 700; color: var(--color-olive);">New Password (Optional)</label>
+          <input type="password" id="profileNewPasswordInput" placeholder="Leave blank to keep existing password" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 13.5px;" />
+        </div>
+
+        <div style="margin-bottom: 16px;" id="currentPasswordWrap">
+          <label style="font-size: 12.5px; font-weight: 700; color: var(--color-olive);">Current Password (Required for changes)</label>
+          <input type="password" id="profileCurrentPasswordInput" placeholder="Enter current password" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 13.5px;" />
+        </div>
+
+        <button type="submit" id="btnSaveProfile" style="width: 100%; background: var(--color-olive); color: #FFFFFF; border: none; padding: 12px; border-radius: var(--radius-sm); font-weight: 700; font-size: 14px; cursor: pointer;">
+          Save Profile Updates
+        </button>
+        <div id="profileSaveMsg" style="text-align: center; margin-top: 10px; font-size: 13px; font-weight: 700;"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    const API = '/api';
+
+    // State Variables
+    let currentUser = null;
+    let menuItems = [];
+    let cart = {}; // { dishId: quantity }
+    let selectedCategory = 'ALL';
+    let currentDistanceKm = 3.5;
+    let currentDeliveryFee = 32;
+    let calculatedRatePerKm = 9.0;
+    let restaurantKitchenAddress = 'Brigade Road, Central Bangalore, Karnataka 560001';
+    let distanceDebounceTimer = null;
+    let liveCountdownInterval = null;
+
+    // 1. Initialize User Session
+    function initUserSession() {
+      const stored = localStorage.getItem('gr8food_user');
+      if (stored && stored !== 'null') {
+        try {
+          currentUser = JSON.parse(stored);
+        } catch (_) { currentUser = null; }
+      }
+
+      if (!currentUser) {
+        currentUser = {
+          username: 'guest',
+          full_name: 'Guest Diner',
+          role: 'customer',
+          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest',
+          phone: '',
+          address: ''
+        };
+      }
+
+      updateUserNavUI();
+      loadSavedUserProfile();
+    }
+
+    function updateUserNavUI() {
+      const navUsername = document.getElementById('navUsername');
+      const navAvatarImg = document.getElementById('navAvatarImg');
+      const dropdownFullName = document.getElementById('dropdownFullName');
+      const dropdownRole = document.getElementById('dropdownRole');
+      const navAdminHubLink = document.getElementById('navAdminHubLink');
+
+      if (currentUser) {
+        navUsername.textContent = currentUser.full_name || currentUser.username;
+        dropdownFullName.textContent = currentUser.full_name || currentUser.username;
+        dropdownRole.textContent = currentUser.role || 'Customer';
+        if (currentUser.avatar) {
+          navAvatarImg.src = currentUser.avatar;
+        }
+
+        const role = (currentUser.role || '').toLowerCase().trim();
+        if (role === 'admin' || role.includes('admin')) {
+          if (navAdminHubLink) navAdminHubLink.style.display = 'flex';
+        } else {
+          if (navAdminHubLink) navAdminHubLink.style.display = 'none';
+        }
+      }
+    }
+
+    // Accessible Profile Dropdown Toggle
+    function toggleProfileDropdown() {
+      const wrap = document.getElementById('profileDropdownWrap');
+      const btn = document.getElementById('profileTriggerBtn');
+      const isOpen = wrap.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+    }
+
+    function closeProfileDropdown() {
+      const wrap = document.getElementById('profileDropdownWrap');
+      const btn = document.getElementById('profileTriggerBtn');
+      wrap.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    document.addEventListener('click', (e) => {
+      const wrap = document.getElementById('profileDropdownWrap');
+      if (wrap && !wrap.contains(e.target)) {
+        closeProfileDropdown();
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('gr8food_user');
+      window.location.replace('login.html');
+    }
+
+    // 2. Fetch Menu and Render Discover Categories & Dish Cards
+    async function fetchMenuData() {
+      try {
+        const res = await fetch(`${API}/menu`);
+        if (res.ok) {
+          menuItems = await res.json();
+          renderDiscoverCategories();
+          renderDishesGrid();
+        }
+      } catch (err) {
+        console.error('Failed to load menu:', err);
+      }
+    }
+
+    function renderDiscoverCategories() {
+      const grid = document.getElementById('categoryChipsGrid');
+      if (!grid) return;
+
+      // Group counts
+      const counts = {};
+      menuItems.forEach(item => {
+        const cat = item.category || 'Main Course';
+        counts[cat] = (counts[cat] || 0) + 1;
+      });
+
+      const categories = ['ALL', ...Object.keys(counts)];
+      
+      const iconMap = {
+        'ALL': '🍴',
+        'Biryani & Rice': '🍚',
+        'Breads & Tandoor': '🫓',
+        'Curries & Gravies': '🥘',
+        'Rice & Meals': '🍛',
+        'Combos & Starters': '🍗'
+      };
+
+      grid.innerHTML = categories.map(cat => {
+        const count = cat === 'ALL' ? menuItems.length : (counts[cat] || 0);
+        const isActive = selectedCategory === cat ? 'active' : '';
+        const icon = iconMap[cat] || '🍲';
+        const title = cat === 'ALL' ? 'All Specialities' : cat;
+
+        return `
+          <div class="category-chip-card ${isActive}" onclick="filterByCategory('${cat}')">
+            <div class="cat-icon-box">${icon}</div>
+            <div>
+              <div class="cat-title">${escapeHTML(title)}</div>
+              <div class="cat-count">${count} ${count === 1 ? 'Dish' : 'Dishes'}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterByCategory(cat) {
+      selectedCategory = cat;
+      renderDiscoverCategories();
+      renderDishesGrid();
+      const menuSection = document.getElementById('menuSection');
+      if (menuSection) {
+        menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function handleSearchFilter() {
+      renderDishesGrid();
+    }
+
+    function renderDishesGrid() {
+      const grid = document.getElementById('dishesMenuGrid');
+      if (!grid) return;
+
+      const searchTerm = (document.getElementById('dishSearchInput')?.value || '').toLowerCase().trim();
+      const availableOnly = document.getElementById('availableOnlyToggle')?.checked || false;
+
+      const filtered = menuItems.filter(item => {
+        const matchCat = selectedCategory === 'ALL' || item.category === selectedCategory;
+        const matchSearch = item.name.toLowerCase().includes(searchTerm) || (item.desc || '').toLowerCase().includes(searchTerm);
+        const matchAvail = !availableOnly || item.is_available !== false;
+        return matchCat && matchSearch && matchAvail;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #FFFFFF; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <div style="font-size: 32px; margin-bottom: 8px;">🍽️</div>
+            <h3 style="font-family: var(--font-heading); color: var(--color-olive); margin-bottom: 4px;">No dishes match your selection</h3>
+            <p style="color: var(--text-muted); font-size: 14px;">Try searching for another keyword or view all categories.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(dish => {
+        const qty = cart[dish.id] || 0;
+        const isAvailable = dish.is_available !== false;
+        const fallbackImg = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80';
+        const imgUrl = dish.image_url || fallbackImg;
+
+        return `
+          <div class="dish-card ${!isAvailable ? 'out-of-stock' : ''}">
+            <div class="dish-media">
+              <img src="${escapeHTML(imgUrl)}" alt="${escapeHTML(dish.name)}" onerror="this.src='${fallbackImg}'" loading="lazy" />
+              <span class="dish-category-tag">${escapeHTML(dish.category || 'Main Course')}</span>
+              <span class="dish-stock-badge ${!isAvailable ? 'out' : ''}">
+                ${isAvailable ? 'Fresh Available' : 'Out of Stock'}
+              </span>
+            </div>
+
+            <div class="dish-body">
+              <div>
+                <h3 class="dish-title">${escapeHTML(dish.name)}</h3>
+                <p class="dish-desc">${escapeHTML(dish.desc || dish.description || 'Prepared fresh to order with pure spices.')}</p>
+              </div>
+
+              <div class="dish-footer-row">
+                <div class="dish-price">₹${Number(dish.price).toFixed(0)}</div>
+
+                <div>
+                  ${!isAvailable 
+                    ? `<button class="btn-add-dish" disabled>Sold Out</button>`
+                    : qty === 0 
+                      ? `<button class="btn-add-dish" onclick="addToCart(${dish.id})">+ Add</button>`
+                      : `
+                        <div class="qty-control-group">
+                          <button class="qty-btn" onclick="updateCartQty(${dish.id}, -1)">−</button>
+                          <span class="qty-number">${qty}</span>
+                          <button class="qty-btn" onclick="updateCartQty(${dish.id}, 1)">+</button>
+                        </div>
+                      `
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 3. Cart & Ordering System
+    function addToCart(dishId) {
+      cart[dishId] = (cart[dishId] || 0) + 1;
+      updateCartBadge();
+      renderDishesGrid();
+    }
+
+    function updateCartQty(dishId, delta) {
+      if (!cart[dishId]) return;
+      cart[dishId] += delta;
+      if (cart[dishId] <= 0) {
+        delete cart[dishId];
+      }
+      updateCartBadge();
+      renderDishesGrid();
+      renderCartItemsModal();
+    }
+
+    function updateCartBadge() {
+      const totalItems = Object.values(cart).reduce((sum, q) => sum + q, 0);
+      const badge = document.getElementById('cartCountBadge');
+      if (badge) badge.textContent = totalItems;
+    }
+
+    function openCartModal() {
+      document.getElementById('cartModal').style.display = 'flex';
+      renderCartItemsModal();
+      
+      // Pre-fill user data if available
+      const addressInput = document.getElementById('deliveryAddressInput');
+      const phoneInput = document.getElementById('deliveryPhoneInput');
+      if (currentUser) {
+        if (!addressInput.value && currentUser.address) addressInput.value = currentUser.address;
+        if (!phoneInput.value && currentUser.phone) phoneInput.value = currentUser.phone;
+      }
+
+      // Automatically compute distance
+      calculateRealDistance();
+    }
+
+    function closeCartModal() {
+      document.getElementById('cartModal').style.display = 'none';
+    }
+
+    function renderCartItemsModal() {
+      const container = document.getElementById('cartItemsList');
+      if (!container) return;
+
+      const dishIds = Object.keys(cart);
+      if (dishIds.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 24px; color: var(--text-muted);">
+            <div style="font-size: 28px; margin-bottom: 6px;">🛒</div>
+            <p style="font-size: 14px;">Your cart is currently empty. Add dishes from the menu to start ordering!</p>
+          </div>
+        `;
+        document.getElementById('cartSubtotalText').textContent = '₹0';
+        document.getElementById('cartGrandTotalText').textContent = '₹0';
+        return;
+      }
+
+      let subtotal = 0;
+      container.innerHTML = dishIds.map(id => {
+        const dish = menuItems.find(m => m.id === parseInt(id, 10));
+        if (!dish) return '';
+        const qty = cart[id];
+        const linePrice = Number(dish.price) * qty;
+        subtotal += linePrice;
+
+        return `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
+            <div>
+              <strong style="font-size: 14px; color: var(--color-olive);">${escapeHTML(dish.name)}</strong>
+              <div style="font-size: 12px; color: var(--text-muted);">₹${Number(dish.price).toFixed(0)} each</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="qty-control-group">
+                <button class="qty-btn" onclick="updateCartQty(${dish.id}, -1)">−</button>
+                <span class="qty-number">${qty}</span>
+                <button class="qty-btn" onclick="updateCartQty(${dish.id}, 1)">+</button>
+              </div>
+              <strong style="font-size: 14px; color: var(--color-olive); min-width: 48px; text-align: right;">₹${linePrice}</strong>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('cartSubtotalText').textContent = `₹${subtotal}`;
+      recalculateGrandTotal(subtotal);
+    }
+
+    function handleDineOptionChange() {
+      const mode = document.getElementById('dineOptionSelect').value;
+      const deliveryBlock = document.getElementById('deliveryDetailsBlock');
+      const deliveryRow = document.getElementById('cartDeliveryRow');
+
+      if (mode === 'Delivery to Home') {
+        deliveryBlock.style.display = 'block';
+        deliveryRow.style.display = 'flex';
+        calculateRealDistance();
+      } else {
+        deliveryBlock.style.display = 'none';
+        deliveryRow.style.display = 'none';
+        recalculateGrandTotal();
+      }
+    }
+
+    function toggleUpiSection() {
+      const method = document.getElementById('paymentMethodSelect').value;
+      const upiBlock = document.getElementById('upiPaymentBlock');
+      upiBlock.style.display = method === 'Online' ? 'block' : 'none';
+    }
+
+    // 4. Real Distance & Dynamic Delivery Pricing
+    function debounceCalculateDistance() {
+      clearTimeout(distanceDebounceTimer);
+      distanceDebounceTimer = setTimeout(calculateRealDistance, 600);
+    }
+
+    async function calculateRealDistance() {
+      const address = (document.getElementById('deliveryAddressInput')?.value || '').trim();
+      const statusText = document.getElementById('distanceStatusText');
+      const distDisplay = document.getElementById('distanceKmDisplay');
+      const feeDisplay = document.getElementById('deliveryFeeDisplay');
+
+      if (!address || address.length < 3) {
+        distDisplay.textContent = '3.5 km (Default)';
+        feeDisplay.textContent = '₹32';
+        currentDistanceKm = 3.5;
+        currentDeliveryFee = 32;
+        recalculateGrandTotal();
+        return;
+      }
+
+      statusText.textContent = 'Calculating real map distance from restaurant kitchen...';
+
+      try {
+        const res = await fetch(`${API}/calculate-distance`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customerAddress: address })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          currentDistanceKm = data.distanceKm;
+          currentDeliveryFee = data.deliveryFee;
+          calculatedRatePerKm = data.ratePerKm || 9.0;
+          distDisplay.textContent = `${data.distanceKm} km`;
+          feeDisplay.textContent = `₹${data.deliveryFee}`;
+          statusText.textContent = `Real route: ${data.distanceKm} km from kitchen (${data.restaurantAddress}) @ ₹${calculatedRatePerKm}/km`;
+          recalculateGrandTotal();
+        } else {
+          statusText.textContent = 'Using local kitchen delivery radius estimation (₹9/km)';
+        }
+      } catch (err) {
+        statusText.textContent = 'Using local kitchen delivery radius estimation (₹9/km)';
+      }
+    }
+
+    function recalculateGrandTotal(explicitSubtotal) {
+      let subtotal = explicitSubtotal;
+      if (subtotal === undefined) {
+        subtotal = Object.entries(cart).reduce((sum, [id, qty]) => {
+          const dish = menuItems.find(m => m.id === parseInt(id, 10));
+          return sum + (dish ? Number(dish.price) * qty : 0);
+        }, 0);
+      }
+
+      const mode = document.getElementById('dineOptionSelect')?.value || 'Delivery to Home';
+      const delFee = mode === 'Delivery to Home' ? currentDeliveryFee : 0;
+      
+      const grandTotal = subtotal + delFee;
+      document.getElementById('cartDeliveryFeeText').textContent = `₹${delFee} (${currentDistanceKm} km)`;
+      document.getElementById('cartGrandTotalText').textContent = `₹${grandTotal}`;
+    }
+
+    async function submitOrderPlacement() {
+      const dishIds = Object.keys(cart);
+      if (dishIds.length === 0) {
+        alert('Your cart is empty. Please select dishes first.');
+        return;
+      }
+
+      const mode = document.getElementById('dineOptionSelect').value;
+      const paymentMode = document.getElementById('paymentMethodSelect').value;
+      const address = (document.getElementById('deliveryAddressInput')?.value || '').trim();
+      const phone = (document.getElementById('deliveryPhoneInput')?.value || '').trim();
+      const notes = (document.getElementById('deliveryNotesInput')?.value || '').trim();
+      const utr = (document.getElementById('upiTransactionIdInput')?.value || '').trim();
+      const billPref = document.getElementById('billPreferenceSelect')?.value || 'Soft Copy';
+      const msg = document.getElementById('orderStatusMsg');
+      const btn = document.getElementById('btnSubmitOrder');
+
+      if (mode === 'Delivery to Home') {
+        if (!address || address.length < 4) {
+          msg.style.color = 'var(--color-danger)';
+          msg.textContent = 'Please enter your complete delivery address.';
+          return;
+        }
+        if (!phone || phone.length < 8) {
+          msg.style.color = 'var(--color-danger)';
+          msg.textContent = 'Please enter a valid mobile number for delivery.';
+          return;
+        }
+      }
+
+      if (paymentMode === 'Online' && (!utr || utr.length < 4)) {
+        msg.style.color = 'var(--color-danger)';
+        msg.textContent = 'Please enter your UPI reference transaction number (UTR).';
+        return;
+      }
+
+      const orderItems = dishIds.map(id => {
+        const dish = menuItems.find(m => m.id === parseInt(id, 10));
+        return `${dish ? dish.name : 'Dish'} x ${cart[id]}`;
+      });
+
+      const subtotal = dishIds.reduce((sum, id) => {
+        const dish = menuItems.find(m => m.id === parseInt(id, 10));
+        return sum + (dish ? Number(dish.price) * cart[id] : 0);
+      }, 0);
+
+      const delFee = mode === 'Delivery to Home' ? currentDeliveryFee : 0;
+      const total = subtotal + delFee;
+
+      btn.disabled = true;
+      btn.textContent = 'Transmitting Order to Kitchen...';
+      msg.textContent = '';
+
+      try {
+        const custName = currentUser ? (currentUser.full_name || currentUser.username || 'Guest Customer') : 'Guest Customer';
+        const custUsername = currentUser ? (currentUser.username || 'guest') : 'guest';
+
+        const res = await fetch(`${API}/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer: custName,
+            username: custUsername,
+            items: orderItems,
+            foodSubtotal: subtotal,
+            deliveryFee: delFee,
+            distanceKm: currentDistanceKm,
+            total,
+            dineOption: mode,
+            paymentMode,
+            transactionId: utr || (paymentMode === 'Cash' ? 'Cash' : 'N/A'),
+            deliveryAddress: address,
+            deliveryPhone: phone,
+            deliveryNotes: notes,
+            billPreference: billPref
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          msg.style.color = 'var(--color-success)';
+          msg.textContent = '✅ Order received! Cooking tracker launched.';
+          cart = {};
+          updateCartBadge();
+          renderDishesGrid();
+          setTimeout(() => {
+            closeCartModal();
+            viewMyLiveOrderStatus();
+          }, 800);
+        } else {
+          msg.style.color = 'var(--color-danger)';
+          msg.textContent = data.error || 'Failed to place order.';
+          btn.disabled = false;
+          btn.textContent = 'Confirm & Place Order';
+        }
+      } catch (err) {
+        msg.style.color = 'var(--color-danger)';
+        msg.textContent = 'Server connection error. Please try again.';
+        btn.disabled = false;
+        btn.textContent = 'Confirm & Place Order';
+      }
+    }
+
+    // 5. Live Order Status Polling & Cooking Countdown Tracker
+    let currentCustomerActiveOrder = null;
+
+    function viewMyLiveOrderStatus() {
+      document.getElementById('orderTrackerModal').style.display = 'flex';
+      pollLiveOrderStatus();
+    }
+
+    function closeOrderTrackerModal() {
+      document.getElementById('orderTrackerModal').style.display = 'none';
+      clearInterval(liveCountdownInterval);
+    }
+
+    async function pollLiveOrderStatus() {
+      const container = document.getElementById('trackerModalBody');
+      const customerName = currentUser ? (currentUser.full_name || currentUser.username || 'Guest Customer') : 'Guest Customer';
+
+      try {
+        const res = await fetch(`${API}/orders/customer-status?customer=${encodeURIComponent(customerName)}`);
+        const data = await res.json();
+
+        if (!data.activeOrder) {
+          currentCustomerActiveOrder = null;
+          container.innerHTML = `
+            <div style="text-align: center; padding: 24px; color: var(--text-muted);">
+              <div style="font-size: 32px; margin-bottom: 8px;">🍽️</div>
+              <h4 style="font-family: var(--font-heading); color: var(--color-olive); font-size: 18px;">No Active Orders</h4>
+              <p style="font-size: 13.5px; margin-top: 4px;">Place an order from our menu to track real-time kitchen preparation!</p>
+            </div>
+          `;
+          return;
+        }
+
+        const o = data.activeOrder;
+        currentCustomerActiveOrder = o;
+        let statusClass = 'pending';
+        let statusTitle = 'Order Received — Awaiting Kitchen Acceptance';
+
+        if (o.status === 'Accepted') {
+          statusClass = 'accepted';
+          statusTitle = '👨‍🍳 Kitchen Accepted — Currently Cooking';
+        } else if (o.status === 'Rejected') {
+          statusClass = 'rejected';
+          statusTitle = '⚠️ Order Notice: No available stocks for now';
+        } else if (o.status === 'Completed') {
+          statusClass = 'accepted';
+          statusTitle = '✅ Food Prepared & Ready!';
+        }
+
+        const orderDisplayCode = o.order_code || o.orderCode || `ORD-${o.id}`;
+        const isFirst = !!(o.is_first_order || o.isFirstOrder);
+        const billPref = o.bill_preference || o.billPreference || 'Soft Copy';
+
+        container.innerHTML = `
+          <div class="tracker-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+              <span class="tracker-status-pill ${statusClass}">${escapeHTML(o.status)}</span>
+              <strong style="color:var(--color-olive); font-size:13.5px;">#${escapeHTML(orderDisplayCode)}</strong>
+            </div>
+
+            ${isFirst ? `
+              <div style="background:#E8F5E9; color:#2E7D32; border:1px solid #A5D6A7; border-radius:var(--radius-sm); padding:6px 10px; font-size:12px; font-weight:700; margin-bottom:10px; text-align:center;">
+                🌟 Welcome! Your 1st Order with gr8food portal
+              </div>
+            ` : ''}
+
+            <h4 style="font-size: 16px; color: var(--color-olive); margin-bottom: 6px;">${escapeHTML(statusTitle)}</h4>
+            
+            ${o.status === 'Accepted' && o.remaining_seconds !== undefined
+              ? `
+                <div style="margin: 14px 0;">
+                  <div style="font-size: 12.5px; color: var(--text-muted);">Estimated Cooking Time Remaining:</div>
+                  <div class="timer-countdown-display" id="cookingCountdownDigits">--:--</div>
+                  <div style="font-size: 12px; color: var(--color-khaki-dark); font-weight: 700;">Chef Cooking Duration: ${escapeHTML(o.cooking_time || '15 mins')}</div>
+                </div>
+              `
+              : ''
+            }
+
+            ${o.status === 'Rejected'
+              ? `
+                <div style="background: var(--color-danger-bg); color: var(--color-danger); border: 1px solid rgba(155, 34, 38, 0.3); border-radius: var(--radius-sm); padding: 12px; margin-top: 10px; font-size: 13.5px; font-weight: 700;">
+                  ${escapeHTML(o.rejection_reason || 'No available stocks for now. Please choose another delicacy or try again later.')}
+                </div>
+              `
+              : ''
+            }
+
+            <div style="text-align: left; background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 14px; margin-top: 14px; font-size: 13px; line-height: 1.5;">
+              <div><strong>Dishes:</strong> ${escapeHTML(Array.isArray(o.items) ? o.items.join(', ') : o.items)}</div>
+              <div><strong>Order Mode:</strong> ${escapeHTML(o.dine_option)}</div>
+              <div><strong>Bill Format:</strong> <span style="color:var(--color-olive); font-weight:700;">${escapeHTML(billPref)}</span></div>
+              <div style="margin-top: 4px; font-size: 14px; color: var(--color-olive); font-weight: 800;"><strong>Total Bill:</strong> ₹${o.total_price}</div>
+              <div style="margin-top: 6px; font-size: 12.5px; font-weight: 700; color: ${o.payment_status === 'Verified & Received' ? 'var(--color-success)' : 'var(--color-warning)'};">
+                ${o.payment_status === 'Verified & Received' ? '✅ Payment Confirmed & Received' : '⏳ Payment Status: Awaiting Verification / Cash on Delivery'}
+              </div>
+            </div>
+
+            <!-- Invoice Action Button: Available only when payment is verified -->
+            ${o.payment_status === 'Verified & Received' ? `
+              <button onclick="openCustomerBillModal()" style="width: 100%; margin-top: 14px; background: var(--bg-cream-alt); color: var(--color-olive); border: 1.5px solid var(--color-olive); padding: 11px; border-radius: var(--radius-sm); font-weight: 800; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span>🧾</span> View & Download Official Bill
+              </button>
+            ` : `
+              <div style="margin-top: 14px; background: #FFF8E1; border: 1px solid #FFE082; border-radius: var(--radius-sm); padding: 12px; text-align: center;">
+                <div style="font-size: 13px; color: #795548; font-weight: 700;">
+                  🔒 Official Bill Copy Locked
+                </div>
+                <div style="font-size: 11.5px; color: #8D6E63; margin-top: 2px;">
+                  Your official invoice will be unlocked immediately after payment is confirmed by our kitchen team.
+                </div>
+              </div>
+            `}
+          </div>
+        `;
+
+        if (o.status === 'Accepted' && o.remaining_seconds !== undefined) {
+          startCountdownTimer(o.remaining_seconds);
+        }
+      } catch (err) {
+        console.error('Error polling order status:', err);
+      }
+    }
+
+    // Customer Bill & Invoice Logic
+    function openCustomerBillModal() {
+      if (!currentCustomerActiveOrder) return;
+      const o = currentCustomerActiveOrder;
+      if (o.payment_status !== 'Verified & Received') {
+        alert('Official bill copy will be unlocked once payment is confirmed & received.');
+        return;
+      }
+      const orderCode = o.order_code || o.orderCode || `ORD-${o.id}`;
+      const isFirst = !!(o.is_first_order || o.isFirstOrder);
+      const billPref = o.bill_preference || o.billPreference || 'Soft Copy';
+      const items = Array.isArray(o.items) ? o.items : [o.items || ''];
+      const subtotal = o.food_subtotal || o.total_price || 0;
+      const delFee = o.delivery_fee || 0;
+      const dist = o.distance_km || 0;
+      const total = o.total_price || 0;
+      const customer = currentUser.full_name || currentUser.username || 'Customer';
+
+      const billContainer = document.getElementById('customerPrintableBill');
+      billContainer.innerHTML = `
+        <div style="text-align: center; border-bottom: 2px dashed #A89F8D; padding-bottom: 12px; margin-bottom: 14px;">
+          <h2 style="font-family: var(--font-heading); color: var(--color-olive); margin: 0; font-size: 24px;">gr8food portal</h2>
+          <div style="font-size: 12px; color: #555; margin-top: 2px; font-weight: 600;">Artisan Cuisine & Doorstep Delivery</div>
+          <div style="font-size: 11.5px; color: #666; margin-top: 3px;">📍 Brigade Road, Central Bangalore | 📞 +91 80733 49233</div>
+          <div style="font-size: 11px; color: #777; margin-top: 2px;">GSTIN: 29AABCU9603R1ZM • FSSAI Lic: 11223344000123</div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 12px; line-height: 1.5;">
+          <div>
+            <strong>Invoice / Order No:</strong> <span style="color:var(--color-olive); font-weight:800;">#${escapeHTML(orderCode)}</span><br>
+            <strong>Date:</strong> ${escapeHTML(o.created_at || new Date().toLocaleString())}<br>
+            <strong>Bill Format:</strong> <span style="font-weight:700; color:var(--color-olive);">${escapeHTML(billPref)}</span>
+          </div>
+          <div style="text-align: right;">
+            <strong>Customer:</strong> ${escapeHTML(customer)} ${isFirst ? '🌟' : ''}<br>
+            <strong>Order Type:</strong> ${escapeHTML(o.dine_option)}<br>
+            <strong>Payment Mode:</strong> ${escapeHTML(o.payment_mode || 'Online')}<br>
+            <strong>Status:</strong> <span style="font-weight:700;">${escapeHTML(o.status)}</span>
+          </div>
+        </div>
+
+        ${o.dine_option === 'Delivery to Home' ? `
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 4px; padding: 8px 10px; font-size: 11.5px; margin-bottom: 12px; line-height: 1.45;">
+            📍 <strong>Delivery Address:</strong> ${escapeHTML(o.delivery_address || 'Provided in Order')}<br>
+            📞 <strong>Contact:</strong> ${escapeHTML(o.delivery_phone || currentUser.phone || 'N/A')} | 🛵 <strong>Distance:</strong> ${dist} km
+            ${o.delivery_notes ? `<br>📝 <em>Note: ${escapeHTML(o.delivery_notes)}</em>` : ''}
+          </div>
+        ` : ''}
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 12px;">
+          <thead>
+            <tr style="border-bottom: 1px solid #A89F8D; background: #F7F5F0;">
+              <th style="padding: 6px 8px; text-align: left;">Dishes Ordered</th>
+              <th style="padding: 6px 8px; text-align: right;">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(item => `
+              <tr style="border-bottom: 1px solid #EEE;">
+                <td style="padding: 6px 8px; font-weight: 600;">${escapeHTML(item)}</td>
+                <td style="padding: 6px 8px; text-align: right;">1</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div style="border-top: 1px solid #A89F8D; padding-top: 8px; font-size: 12.5px; line-height: 1.6;">
+          <div style="display: flex; justify-content: space-between;">
+            <span>Dishes Subtotal:</span>
+            <strong>₹${subtotal}</strong>
+          </div>
+          ${delFee > 0 ? `
+            <div style="display: flex; justify-content: space-between;">
+              <span>Doorstep Delivery (${dist} km):</span>
+              <strong>₹${delFee}</strong>
+            </div>
+          ` : ''}
+          <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; color: var(--color-olive); border-top: 2px dashed #A89F8D; padding-top: 6px; margin-top: 6px;">
+            <span>Grand Total:</span>
+            <span>₹${total}</span>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 14px; border-top: 1px solid #EEE; padding-top: 10px; font-size: 11px; color: #666;">
+          Thank you for choosing gr8food portal! • Made with care, served with love.
+        </div>
+      `;
+
+      document.getElementById('customerBillModal').style.display = 'flex';
+    }
+
+    function closeCustomerBillModal() {
+      document.getElementById('customerBillModal').style.display = 'none';
+    }
+
+    function printCustomerBill() {
+      window.print();
+    }
+
+    function downloadCustomerSoftCopy() {
+      if (!currentCustomerActiveOrder) return;
+      const o = currentCustomerActiveOrder;
+      const orderCode = o.order_code || o.orderCode || `ORD-${o.id}`;
+      const billEl = document.getElementById('customerPrintableBill');
+
+      const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>gr8food Bill - ${orderCode}</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #FFF8ED; color: #343A32; padding: 24px; display: flex; justify-content: center; }
+    .invoice-card { background: #FFFFFF; border: 1px solid #A89F8D; border-radius: 8px; padding: 24px; max-width: 480px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    table { width: 100%; border-collapse: collapse; }
+  </style>
+</head>
+<body>
+  <div class="invoice-card">
+    ${billEl.innerHTML}
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gr8food_invoice_${orderCode}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function sendCustomerBillWhatsApp() {
+      if (!currentCustomerActiveOrder) return;
+      const o = currentCustomerActiveOrder;
+      const orderCode = o.order_code || o.orderCode || `ORD-${o.id}`;
+      const customer = currentUser.full_name || currentUser.username || 'Valued Customer';
+      const items = Array.isArray(o.items) ? o.items.join(', ') : o.items;
+      const total = o.total_price || 0;
+
+      const msg = encodeURIComponent(`🧾 *gr8food portal - My Order Receipt*\n\n` +
+        `Customer: *${customer}*\n` +
+        `*Order No:* #${orderCode}\n` +
+        `*Dishes:* ${items}\n` +
+        `*Total Bill:* ₹${total}\n` +
+        `*Mode:* ${o.dine_option}\n` +
+        `*Status:* ${o.status}\n\n` +
+        `_Made with care, served with love!_ 🍽️\n` +
+        `gr8food portal • Brigade Road, Central Bangalore`);
+
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
+
+    function sendCustomerBillEmail() {
+      if (!currentCustomerActiveOrder) return;
+      const o = currentCustomerActiveOrder;
+      const orderCode = o.order_code || o.orderCode || `ORD-${o.id}`;
+      const customer = currentUser.full_name || currentUser.username || 'Customer';
+      const items = Array.isArray(o.items) ? o.items.join(', ') : o.items;
+      const total = o.total_price || 0;
+
+      const subject = encodeURIComponent(`gr8food portal - Order Invoice #${orderCode}`);
+      const body = encodeURIComponent(`Dear ${customer},\n\n` +
+        `Here is your copy of the official gr8food portal invoice.\n\n` +
+        `Invoice / Order: #${orderCode}\n` +
+        `Dishes Ordered: ${items}\n` +
+        `Total Amount: ₹${total}\n` +
+        `Order Type: ${o.dine_option}\n\n` +
+        `Warm regards,\ngr8food portal Kitchen & Doorstep Delivery Team`);
+
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    }
+
+    function startCountdownTimer(seconds) {
+      clearInterval(liveCountdownInterval);
+      let rem = seconds;
+
+      function update() {
+        const el = document.getElementById('cookingCountdownDigits');
+        if (!el) return;
+        if (rem <= 0) {
+          el.textContent = '00:00 (Ready!)';
+          clearInterval(liveCountdownInterval);
+          return;
+        }
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        rem--;
+      }
+
+      update();
+      liveCountdownInterval = setInterval(update, 1000);
+    }
+
+    // 6. Bulk Catering Combos Slider
+    async function fetchCateringCombos() {
+      try {
+        const res = await fetch(`${API}/combos`);
+        if (res.ok) {
+          const combos = await res.json();
+          const slider = document.getElementById('combosSlider');
+          if (slider) {
+            slider.innerHTML = combos.map(c => `
+              <div class="combo-card">
+                <span class="combo-badge">${escapeHTML(c.badge || '👥 Special Catering')}</span>
+                <h3 class="combo-title">${escapeHTML(c.title)}</h3>
+                <p class="combo-desc">${escapeHTML(c.description)}</p>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (_) {}
+    }
+
+    // 7. Customer Reviews System
+    async function fetchCustomerReviews() {
+      try {
+        const res = await fetch(`${API}/reviews`);
+        if (res.ok) {
+          const reviews = await res.json();
+          const list = document.getElementById('reviewsListContainer');
+          if (list) {
+            if (reviews.length === 0) {
+              list.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:13px; padding:16px;">Be the first to leave a kitchen review!</div>`;
+              return;
+            }
+            list.innerHTML = reviews.map(r => `
+              <div class="review-item">
+                <div class="review-author">
+                  <span>${escapeHTML(r.customer_name || 'Guest Diner')}</span>
+                  <small style="color:var(--text-muted); font-weight:normal;">${escapeHTML(r.date || '')}</small>
+                </div>
+                <div class="review-text">“${escapeHTML(r.review)}”</div>
+                ${r.admin_reply ? `
+                  <div class="review-reply">
+                    <strong>👨‍🍳 Chef Reply:</strong>
+                    ${escapeHTML(r.admin_reply)}
+                  </div>
+                ` : ''}
+              </div>
+            `).join('');
+          }
+        }
+      } catch (_) {}
+    }
+
+    async function submitCustomerReview(e) {
+      e.preventDefault();
+      const input = document.getElementById('reviewTextInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      try {
+        const res = await fetch(`${API}/reviews`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer_name: currentUser.full_name || currentUser.username,
+            review: text
+          })
+        });
+        if (res.ok) {
+          input.value = '';
+          fetchCustomerReviews();
+        }
+      } catch (_) {}
+    }
+
+    // 8. User Profile Modal & Updates
+    function openProfileModal() {
+      document.getElementById('profileModal').style.display = 'flex';
+      loadSavedUserProfile();
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').style.display = 'none';
+    }
+
+    async function loadSavedUserProfile() {
+      if (!currentUser || currentUser.username === 'guest') return;
+      try {
+        const res = await fetch(`${API}/user/profile/${encodeURIComponent(currentUser.username)}`);
+        if (res.ok) {
+          const data = await res.json();
+          currentUser = { ...currentUser, ...data };
+          localStorage.setItem('gr8food_user', JSON.stringify(currentUser));
+          updateUserNavUI();
+
+          const nameInp = document.getElementById('profileFullNameInput');
+          const phoneInp = document.getElementById('profilePhoneInput');
+          const addrInp = document.getElementById('profileAddressInput');
+          const avatarImg = document.getElementById('profileModalAvatarImg');
+
+          if (nameInp) nameInp.value = currentUser.full_name || '';
+          if (phoneInp) phoneInp.value = currentUser.phone || '';
+          if (addrInp) addrInp.value = currentUser.address || '';
+          if (avatarImg && currentUser.avatar) avatarImg.src = currentUser.avatar;
+        }
+      } catch (_) {}
+    }
+
+    function handleAvatarFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById('profileModalAvatarImg').src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function handleSaveUserProfile(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('profileFullNameInput').value.trim();
+      const phone = document.getElementById('profilePhoneInput').value.trim();
+      const address = document.getElementById('profileAddressInput').value.trim();
+      const newPassword = document.getElementById('profileNewPasswordInput').value.trim();
+      const currentPassword = document.getElementById('profileCurrentPasswordInput').value.trim();
+      const avatarSrc = document.getElementById('profileModalAvatarImg').src;
+      const msg = document.getElementById('profileSaveMsg');
+      const btn = document.getElementById('btnSaveProfile');
+
+      btn.disabled = true;
+      btn.textContent = 'Saving Changes...';
+      msg.textContent = '';
+
+      try {
+        const res = await fetch(`${API}/user/profile`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            currentUsername: currentUser.username,
+            fullName,
+            phone,
+            address,
+            avatar: avatarSrc,
+            newPassword,
+            currentPassword
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          msg.style.color = 'var(--color-success)';
+          msg.textContent = '✅ Profile updated successfully!';
+          currentUser = { ...currentUser, ...data.user };
+          localStorage.setItem('gr8food_user', JSON.stringify(currentUser));
+          updateUserNavUI();
+          setTimeout(closeProfileModal, 900);
+        } else {
+          msg.style.color = 'var(--color-danger)';
+          msg.textContent = data.error || 'Failed to update profile.';
+        }
+      } catch (err) {
+        msg.style.color = 'var(--color-danger)';
+        msg.textContent = 'Connection error.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Profile Updates';
+      }
+    }
+
+    // Smooth Scroll Helper Functions
+    function scrollToMenuSection() {
+      const el = document.getElementById('menuSection');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function scrollToMenuAndFocus() {
+      const el = document.getElementById('menuSection');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const input = document.getElementById('dishSearchInput');
+        if (input) setTimeout(() => input.focus(), 400);
+      }
+    }
+
+    // Helper: HTML Escaping
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Initialize Everything on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      initUserSession();
+      fetchMenuData();
+      fetchCateringCombos();
+      fetchCustomerReviews();
+    });
+  </script>
+</body>
+</html>

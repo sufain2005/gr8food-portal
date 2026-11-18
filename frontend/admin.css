@@ -1,0 +1,63 @@
+/* Shared CSS helper for admin navigation & modals in Earthy Cream & Muted Khaki Palette */
+:root {
+  --bg-cream: #FFF8ED;
+  --color-khaki: #A89F8D;
+  --color-khaki-light: #EBE5DB;
+  --color-olive: #384338;
+  --color-olive-dark: #272F27;
+  --card-bg: #FFFFFF;
+  --text-dark: #343A32;
+  --text-muted: #646E62;
+}
+
+header {
+  background: var(--color-olive);
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(39, 47, 39, 0.2);
+}
+
+.header-btns {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-nav {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13.5px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.btn-nav:hover {
+  background: var(--color-khaki);
+  color: var(--color-olive-dark);
+  border-color: var(--color-khaki);
+}
+
+#profileModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(39, 47, 39, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
