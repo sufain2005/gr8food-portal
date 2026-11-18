@@ -4,7 +4,8 @@
 > A full-stack food ordering and operations management system featuring an interactive customer menu, cart, real-time delivery fee calculations, and an administrative dashboard.
 
 ---
-Open the page using link : 8food-portal.onrender.com
+Open the page using link : https://gr8food-portal.onrender.com/
+
 ## 🌟 Overview
 
 gr8food portal is designed to provide a seamless dining experience for customers and a smooth management interface for kitchen staff and administrators.
